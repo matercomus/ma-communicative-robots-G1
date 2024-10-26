@@ -74,34 +74,48 @@ def do_action(controller, w1, w2):
     event = None
     found_objects = []
     try:
-        event = controller.step("RotateLeft")
+        event = event = controller.step("MoveAhead")
+        if not event:
+            event = controller.step("RotateLeft")
+        if not event:
+            event = controller.step("RotateRight")
         if event:
             if w1.lower()=="find":
-                answer, found_objects = search_for_object(w2, event, controller)
+                a, found_objects = search_for_object(w2, event, controller)
+                answer += a+";"
             elif w1.lower()=="describe":
-                answer = what_do_you_see(event)
+                a = what_do_you_see(event)
+                answer += a+";"
             elif w1.lower()=="move" or w1.lower()=="go":
                 if w2.lower()=="forward":
                     event = controller.step("MoveAhead")
+                    if event:
+                        answer += "action: MoveAhead;"
                 elif w2.lower()=="back":
                     event = controller.step("MoveBack")
+                    if event:
+                        answer += "action: MoveBack;"
                 elif w2.lower()=="left":
                     event = controller.step("RotateLeft")
+                    if event:
+                        answer += "action: RotateLeft;"
                 elif w2.lower()=="right":
                     event = controller.step("RotateRight")
+                    if event:
+                        answer += "action: RotateRight;"
     except:
-        answer = "Could not move."
-
+        answer += "Could not move."
     if not event:
-        answer = "Cannot do that!"
+        answer += "Cannot do that!"
     return answer, found_objects
 
 def process_instruction(event, prompt):
     answer = ""
     words = prompt.split()
     if words[0].lower() in actions:
-        answer, found_objects = do_action(event, words[0].lower(), words[-1].lower())
-        answer += str(found_objects)
+        a, found_objects = do_action(event, words[0].lower(), words[-1].lower())
+        answer += a+str(found_objects)
     else:
-        answer = "Sorry I do not get that."
+        answer = "Sorry I do not get that: "+words[0]
+    return answer
         
