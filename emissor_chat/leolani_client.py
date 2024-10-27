@@ -1,5 +1,7 @@
 import abc
 import uuid
+import numpy as np
+from enum import Enum, auto
 import emissor
 import cltl.combot
 from emissor.persistence import ScenarioStorage
@@ -8,6 +10,21 @@ from emissor.representation.scenario import Modality, Signal, Scenario, Scenario
 from emissor.representation.scenario import TextSignal, ImageSignal
 from cltl.combot.event.emissor import AnnotationEvent, TextSignalEvent, ImageSignalEvent
 from cltl.combot.infra.time_util import timestamp_now
+
+
+class Action(Enum):
+    MoveAhead = auto()
+    MoveBack = auto()
+    MoveLeft = auto()
+    MoverRight = auto()
+    RotateRight =auto()
+    RotateLeft = auto()
+    LookUp =auto()
+    LookDown =auto()
+    Crouch = auto()
+    Stand = auto()
+    Teleport = auto()
+    TeleportFull = auto()
 
 class LeolaniChatClient():
 
@@ -29,6 +46,11 @@ class LeolaniChatClient():
     def _add_utterance(self, speaker_name, utterance):
         signal = TextSignal.for_scenario(self._scenario, timestamp_now(), timestamp_now(), None, utterance)
         TextSignalEvent.add_agent_annotation(signal, speaker_name)
+        self._scenario.append_signal(signal)
+
+    def _add_action(self, action:Action):
+        signal = TextSignal.for_scenario(self._scenario, timestamp_now(), timestamp_now(), None, action.name)
+        TextSignalEvent.add_agent_annotation(signal, "ACTION")
         self._scenario.append_signal(signal)
 
     def _add_image(self):
