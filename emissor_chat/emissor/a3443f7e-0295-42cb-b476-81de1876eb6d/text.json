@@ -1,0 +1,487 @@
+[
+  {
+    "@context": {
+      "TextSignal": "https://emissor.org#TextSignal",
+      "id": "@id",
+      "text": "https://emissor.org#text",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "seq": "https://emissor.org#seq",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "TextSignal",
+    "id": "71076a1e-ee32-4844-8e18-604f964599c7",
+    "ruler": {
+      "@context": {
+        "Index": "https://emissor.org#Index",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "stop": "https://emissor.org#stop",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "Index",
+      "container_id": "71076a1e-ee32-4844-8e18-604f964599c7",
+      "start": 0,
+      "stop": 28,
+      "_py_type": "emissor.representation.container-Index"
+    },
+    "seq": [
+      "H",
+      "i",
+      " ",
+      "P",
+      "i",
+      "e",
+      "k",
+      ".",
+      " ",
+      "T",
+      "e",
+      "l",
+      "l",
+      " ",
+      "m",
+      "e",
+      " ",
+      "w",
+      "h",
+      "a",
+      "t",
+      " ",
+      "t",
+      "o",
+      " ",
+      "d",
+      "o",
+      "."
+    ],
+    "modality": "TEXT",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "<emissor.persistence.persistence.ScenarioController object at 0x11022e370>",
+      "start": 1730112705114,
+      "end": 1730112705114
+    },
+    "files": [],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "0e068e3a-4506-4f93-b5d2-1d4c8cd986f0",
+        "segment": [
+          {
+            "@context": {
+              "Index": "https://emissor.org#Index",
+              "id": "@id",
+              "start": "https://emissor.org#start",
+              "stop": "https://emissor.org#stop",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "Index",
+            "container_id": "71076a1e-ee32-4844-8e18-604f964599c7",
+            "start": 0,
+            "stop": 28,
+            "_py_type": "emissor.representation.container-Index"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "ConversationalAgent",
+            "value": "Ai2Thor",
+            "source": "LEOLANI",
+            "timestamp": 1730112705115,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ],
+    "text": "Hi Piek. Tell me what to do."
+  },
+  {
+    "@context": {
+      "TextSignal": "https://emissor.org#TextSignal",
+      "id": "@id",
+      "text": "https://emissor.org#text",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "seq": "https://emissor.org#seq",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "TextSignal",
+    "id": "c75ef211-6e80-4528-b915-371a9deadc09",
+    "ruler": {
+      "@context": {
+        "Index": "https://emissor.org#Index",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "stop": "https://emissor.org#stop",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "Index",
+      "container_id": "c75ef211-6e80-4528-b915-371a9deadc09",
+      "start": 0,
+      "stop": 148,
+      "_py_type": "emissor.representation.container-Index"
+    },
+    "seq": [
+      "T",
+      "h",
+      "i",
+      "s",
+      " ",
+      "i",
+      "s",
+      " ",
+      "w",
+      "h",
+      "a",
+      "t",
+      " ",
+      "I",
+      " ",
+      "c",
+      "a",
+      "n",
+      " ",
+      "d",
+      "o",
+      ":",
+      "(",
+      "'",
+      "I",
+      " ",
+      "c",
+      "a",
+      "n",
+      " ",
+      "d",
+      "o",
+      " ",
+      "t",
+      "h",
+      "e",
+      " ",
+      "f",
+      "o",
+      "l",
+      "l",
+      "o",
+      "w",
+      "i",
+      "n",
+      "g",
+      ":",
+      "'",
+      ",",
+      " ",
+      "\"",
+      "[",
+      "'",
+      "f",
+      "i",
+      "n",
+      "d",
+      "'",
+      ",",
+      " ",
+      "'",
+      "d",
+      "e",
+      "s",
+      "c",
+      "r",
+      "i",
+      "b",
+      "e",
+      "'",
+      ",",
+      " ",
+      "'",
+      "m",
+      "o",
+      "v",
+      "e",
+      "'",
+      ",",
+      " ",
+      "'",
+      "g",
+      "o",
+      "'",
+      ",",
+      " ",
+      "'",
+      "f",
+      "o",
+      "r",
+      "w",
+      "a",
+      "r",
+      "d",
+      "'",
+      ",",
+      " ",
+      "'",
+      "b",
+      "a",
+      "c",
+      "k",
+      "'",
+      ",",
+      " ",
+      "'",
+      "l",
+      "e",
+      "f",
+      "t",
+      "'",
+      ",",
+      " ",
+      "'",
+      "r",
+      "i",
+      "g",
+      "h",
+      "t",
+      "'",
+      ",",
+      " ",
+      "'",
+      "o",
+      "p",
+      "e",
+      "n",
+      "'",
+      ",",
+      " ",
+      "'",
+      "c",
+      "l",
+      "o",
+      "s",
+      "e",
+      "'",
+      ",",
+      " ",
+      "'",
+      "l",
+      "o",
+      "o",
+      "k",
+      "'",
+      "]",
+      "\"",
+      ")"
+    ],
+    "modality": "TEXT",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "<emissor.persistence.persistence.ScenarioController object at 0x11022e370>",
+      "start": 1730112705119,
+      "end": 1730112705119
+    },
+    "files": [],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "4d29cd65-da39-4379-9c8a-bb20b964efe9",
+        "segment": [
+          {
+            "@context": {
+              "Index": "https://emissor.org#Index",
+              "id": "@id",
+              "start": "https://emissor.org#start",
+              "stop": "https://emissor.org#stop",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "Index",
+            "container_id": "c75ef211-6e80-4528-b915-371a9deadc09",
+            "start": 0,
+            "stop": 148,
+            "_py_type": "emissor.representation.container-Index"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "ConversationalAgent",
+            "value": "Ai2Thor",
+            "source": "LEOLANI",
+            "timestamp": 1730112705119,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ],
+    "text": "This is what I can do:('I can do the following:', \"['find', 'describe', 'move', 'go', 'forward', 'back', 'left', 'right', 'open', 'close', 'look']\")"
+  },
+  {
+    "@context": {
+      "TextSignal": "https://emissor.org#TextSignal",
+      "id": "@id",
+      "text": "https://emissor.org#text",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "seq": "https://emissor.org#seq",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "TextSignal",
+    "id": "9a5def82-5f52-4303-9d18-d4e249c4b1ed",
+    "ruler": {
+      "@context": {
+        "Index": "https://emissor.org#Index",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "stop": "https://emissor.org#stop",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "Index",
+      "container_id": "9a5def82-5f52-4303-9d18-d4e249c4b1ed",
+      "start": 0,
+      "stop": 3,
+      "_py_type": "emissor.representation.container-Index"
+    },
+    "seq": [
+      "b",
+      "y",
+      "e"
+    ],
+    "modality": "TEXT",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "<emissor.persistence.persistence.ScenarioController object at 0x11022e370>",
+      "start": 1730112710270,
+      "end": 1730112710270
+    },
+    "files": [],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "53624656-b840-4a49-bd24-edabf09d0441",
+        "segment": [
+          {
+            "@context": {
+              "Index": "https://emissor.org#Index",
+              "id": "@id",
+              "start": "https://emissor.org#start",
+              "stop": "https://emissor.org#stop",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "Index",
+            "container_id": "9a5def82-5f52-4303-9d18-d4e249c4b1ed",
+            "start": 0,
+            "stop": 3,
+            "_py_type": "emissor.representation.container-Index"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "ConversationalAgent",
+            "value": "Piek",
+            "source": "LEOLANI",
+            "timestamp": 1730112710270,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ],
+    "text": "bye"
+  }
+]

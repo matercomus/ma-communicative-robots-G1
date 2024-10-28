@@ -1,0 +1,109 @@
+[
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "0f88ee17-aa81-4755-8ec9-141775e5b054",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "0f88ee17-aa81-4755-8ec9-141775e5b054",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "382d7175-3ec1-47e4-872b-fc31ed4cd1cd",
+      "start": 1730124812768,
+      "end": 1730124812768
+    },
+    "files": [],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "d5324e85-9511-4b5f-9be0-aa9f0a706d1e",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "0f88ee17-aa81-4755-8ec9-141775e5b054",
+            "bounds": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "apple",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1730124812,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  }
+]
