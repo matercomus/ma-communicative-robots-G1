@@ -11,7 +11,7 @@
       "ruler": "https://emissor.org#ruler"
     },
     "@type": "ImageSignal",
-    "id": "0f88ee17-aa81-4755-8ec9-141775e5b054",
+    "id": "ba205c54-4562-47f7-89fa-6c9d8510ca9f",
     "ruler": {
       "@context": {
         "MultiIndex": "https://emissor.org#MultiIndex",
@@ -23,7 +23,7 @@
         }
       },
       "@type": "MultiIndex",
-      "container_id": "0f88ee17-aa81-4755-8ec9-141775e5b054",
+      "container_id": "ba205c54-4562-47f7-89fa-6c9d8510ca9f",
       "bounds": [
         0,
         0,
@@ -46,11 +46,13 @@
         }
       },
       "@type": "TemporalRuler",
-      "container_id": "382d7175-3ec1-47e4-872b-fc31ed4cd1cd",
-      "start": 1730124812768,
-      "end": 1730124812768
+      "container_id": "0fe0951e-24b8-4193-99d1-9a8689da2e66",
+      "start": 1730207461158,
+      "end": 1730207461158
     },
-    "files": [],
+    "files": [
+      "./emissor/0fe0951e-24b8-4193-99d1-9a8689da2e66/image/Apple_f33eaaa0.jpg"
+    ],
     "mentions": [
       {
         "@context": {
@@ -60,7 +62,7 @@
           "annotations": "https://emissor.org#annotations"
         },
         "@type": "Mention",
-        "id": "d5324e85-9511-4b5f-9be0-aa9f0a706d1e",
+        "id": "0f98a7e3-3d75-406f-a2a0-97fddc83fdb6",
         "segment": [
           {
             "@context": {
@@ -73,11 +75,11 @@
               }
             },
             "@type": "MultiIndex",
-            "container_id": "0f88ee17-aa81-4755-8ec9-141775e5b054",
+            "container_id": "ba205c54-4562-47f7-89fa-6c9d8510ca9f",
             "bounds": [
+              -2,
               0,
               0,
-              1,
               1
             ],
             "_py_type": "emissor.representation.container-MultiIndex"
@@ -99,7 +101,7 @@
               "_py_type": "builtins-dict"
             },
             "source": "Ai2Thor",
-            "timestamp": 1730124812,
+            "timestamp": 1730207461,
             "_py_type": "emissor.representation.scenario-Annotation"
           }
         ]

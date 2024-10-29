@@ -1,6 +1,7 @@
 from ai2thor.controller import Controller
 from leolani_client import Action
 import numpy as np
+from PIL import Image
 
 ACTIONS = ["find", "describe", "move", "go", "turn", "forward", "back", "left", "right", "open", "close", "look"]
 
@@ -15,6 +16,9 @@ class Ai2ThorClient:
         self._actions=[]
         self._perceptions=[]
         self._controller = Controller()
+        #self._controller.renderInstanceSegmentation = True
+        self._controller.renderObjectImage = True
+        self._controller.agentMode = "arm"
         self._event = None
 
     def getdistance(self, coord1, coord2):
@@ -45,8 +49,11 @@ class Ai2ThorClient:
         found = []
         for obj in self._event.metadata['objects']:
             if obj['objectType'].lower()==objectType.lower():
+                #coord = self._event.instance_detections2D.get(obj['name'])
+                #print(coord)
                 coord = obj['position']
-                found.append((obj, objectType, coord))
+                image = Image.fromarray(self._controller.last_event.frame)
+                found.append((obj, objectType, coord, image))
         return found
         
     def search_for_object(self, objectType):
@@ -61,7 +68,7 @@ class Ai2ThorClient:
             answer = "I could not find it. Tell me to move?"
         else:
             answer = "I found %s instances of type %s in my view" % (len(found), objectType) 
-            for f,objectType, coord in found:
+            for f,objectType, coord, _ in found:
                 answer += "\n"+f['name'] +" at " + str(coord)
                 # affordances = self.get_true_properties(f)
                 # answer += "These are its properties:"
@@ -97,36 +104,34 @@ class Ai2ThorClient:
     def do_action(self, w1, w2):
         answer = ""
         found_objects = []
-        if self._event:
-            
-            if w1.lower()=="find":
-                answer, found_objects = self.search_for_object(w2)
-                self._actions.append(Action.Look)
+        if w1.lower()=="find":
+            answer, found_objects = self.search_for_object(w2)
+            self._actions.append(Action.Look)
 
-            elif w1.lower()=="describe":
-                answer = self.what_do_you_see()
+        elif w1.lower()=="describe":
+            answer = self.what_do_you_see()
+            
+        elif w1.lower()=="look":
+            if w2.lower()=="up":
+                self._event =self._controller.step(Action.LookUp.name)
+                self._actions.append(Action.LookUp)
+            elif w2.lower()=="down":
+                self._event = self._controller.step(Action.LookDown.name)
+                self._actions.append(Action.LookDown)
                 
-            elif w1.lower()=="look":
-                if w2.lower()=="up":
-                    self._event =self._controller.step(Action.LookUp.name)
-                    self._actions.append(Action.LookUp)
-                elif w2.lower()=="down":
-                    self._event = self._controller.step(Action.LookDown.name)
-                    self._actions.append(Action.LookDown)
-                    
-            elif w1.lower()=="move" or w1.lower()=="go" or w1.lower()=="turn":
-                if w2.lower()=="forward":
-                    self._event =self._controller.step(Action.MoveAhead.name)
-                    self._actions.append(Action.MoveAhead)
-                elif w2.lower()=="back":
-                    self._event = self._controller.step(Action.MoveBack.name)
-                    self._actions.append(Action.MoveAhead)
-                elif w2.lower()=="left":
-                    self._event = self._controller.step(Action.RotateLeft.name)
-                    self._actions.append(Action.RotateLeft)
-                elif w2.lower()=="right":
-                    self._event = self._controller.step(Action.RotateRight.name)
-                    self._actions.append(Action.RotateRight)
+        elif w1.lower()=="move" or w1.lower()=="go" or w1.lower()=="turn":
+            if w2.lower()=="forward":
+                self._event =self._controller.step(Action.MoveAhead.name)
+                self._actions.append(Action.MoveAhead)
+            elif w2.lower()=="back":
+                self._event = self._controller.step(Action.MoveBack.name)
+                self._actions.append(Action.MoveAhead)
+            elif w2.lower()=="left":
+                self._event = self._controller.step(Action.RotateLeft.name)
+                self._actions.append(Action.RotateLeft)
+            elif w2.lower()=="right":
+                self._event = self._controller.step(Action.RotateRight.name)
+                self._actions.append(Action.RotateRight)
 
         return answer, found_objects
 

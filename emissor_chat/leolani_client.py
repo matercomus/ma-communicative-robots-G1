@@ -3,6 +3,7 @@ import uuid
 import numpy as np
 from enum import Enum, auto
 import time
+import os
 import cltl.combot
 from camera import Bounds, CameraResolution, Object, Image
 from emissor.persistence import ScenarioStorage
@@ -45,7 +46,12 @@ class LeolaniChatClient():
         self._scenario_storage = ScenarioStorage(emissor_path)
         self._scenario_context =  ScenarioContext(agent)
         scenario_start = timestamp_now()
-        self._scenario =self._scenario_storage.create_scenario(str(uuid.uuid4()), scenario_start, None, self._scenario_context, signals) 
+        self._scenario_id = str(uuid.uuid4())
+        self._scenario =self._scenario_storage.create_scenario(self._scenario_id, scenario_start, None, self._scenario_context, signals)
+        self._scenario_path = os.path.join(emissor_path, self._scenario_id)
+        self._image_path = os.path.join(self._scenario_path, "image")
+        if not os.path.exists(self._image_path):
+            os.mkdir(self._image_path)
 
     def _add_utterance(self, speaker_name, utterance):
         signal = TextSignal.for_scenario(self._scenario, timestamp_now(), timestamp_now(), None, utterance)
@@ -57,25 +63,27 @@ class LeolaniChatClient():
         TextSignalEvent.add_agent_annotation(signal, "ACTION")
         self._scenario.append_signal(signal)
 
-    def _add_image(self, objectType, bounds):
+    def _add_image(self, objectName, objectType, bounds, image):
+        imageFilePath = os.path.join(self._image_path, objectName+".jpg")
+        image.save(imageFilePath)
         # TODO SYSTEM_VIEW is the angle of the camera, this is for Leolain
         # TODO resolution of the camera needs to be chosen
         SYSTEM_VIEW = Bounds(-0.55, -0.41 + np.pi / 2, 0.55, 0.41 + np.pi / 2)
         resolution = CameraResolution.VGA
 
-        # TODO image as numpy array is needed, depth array if available, file path
-        file_path = ""
+        # TODO image as numpy array is needed, depth array if available
         image_array = np.zeros((resolution.height, resolution.width, 3), dtype=np.uint8)
         depth_array = np.zeros((resolution.height, resolution.width), dtype=np.uint8)
         image = Image(image_array, SYSTEM_VIEW.to_diagonal(), depth_array)
-        signal = ImageSignal.for_scenario(self._scenario.id, timestamp_now(), timestamp_now(), file_path, image.bounds.to_diagonal())
+        signal = ImageSignal.for_scenario(self._scenario.id, timestamp_now(), timestamp_now(), imageFilePath, image.bounds.to_diagonal())
 
         # TODO If annotation is needed: create annotation with type name, annotation data, annotation source name
         # Bounds() takes x_0, x_1, y_0, y_1 as arguments, to_diagonal converts it to x_0, y0, x_1, y_1 
-        segment = MultiIndex(signal.ruler.container_id, Bounds(0, bounds['x'], bounds['y'],bounds['z']).to_diagonal())
+        # print('Bounds for object are', bounds['x'], bounds['y'], bounds['z'])
+        segment = MultiIndex(signal.ruler.container_id, Bounds(bounds['x']-1, bounds['x']+1, bounds['y']-1,bounds['y']+1).to_diagonal())
         annotation_data = {}
-        annotation_person = Annotation(objectType, annotation_data, "Ai2Thor", int(time.time()))
-        mention = Mention(str(uuid.uuid4()), [segment], [annotation_person])
+        annotation = Annotation(objectType, annotation_data, "Ai2Thor", int(time.time()))
+        mention = Mention(str(uuid.uuid4()), [segment], [annotation])
         signal.mentions.append(mention)
         self._scenario.append_signal(signal)
 
