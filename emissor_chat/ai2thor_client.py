@@ -77,15 +77,15 @@ class Ai2ThorClient:
         return answer, found
 
     def what_do_you_see(self, ):
-        answer =  "I see ", len(self, self._event.metadata['objects']), " things here."
-        for object in self._event.metadata['objects']:
-            answer += object['objectType']
-            if object['moveable']:
-                answer += "\tI can move it"
-            if object['openable']:
-                answer += "\tI can open it"
-            if object['breakable']:
-                answer +="\tI can break it"
+        answer =  "I see %s things there.\n" % (len(self._event.metadata['objects']))
+        for obj in self._event.metadata['objects']:
+            answer += obj['objectType']+"\n"
+            if obj['moveable']:
+                answer += "\tI can move it.\n"
+            if obj['openable']:
+                answer += "\tI can open it.\n"
+            if obj['breakable']:
+                answer +="\tI can break it.\n"
         return answer
 
     def get_true_properties(self, object):
