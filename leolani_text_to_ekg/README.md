@@ -25,7 +25,7 @@ You also need to have sufficient memory to run the Docker image, which 8.73GB!
       6. For details, see the “Create Repository” screen dump: <img height="400" src="./images/GDB_new_repo.png" width="400"/>
    3. The new repository should start running automatically. If it does not, go to the dropdown menu in the top right corner and select the repository. You can check whether it is running by viewing your repositories under Setup → Repositories. It should say ‘RUNNING’. 
    4. After creating the ‘sandbox’ you can turn the **Autocomplete** Index to true in the settings (check if it is connected to ‘sandbox’ and not some other database. This makes it easier to search using (sub)strings).
-4. Download the following finetuned LLMs and place them in the resources folder of this repository. The download is a ```tar``` file that you need to unpack: 
+4. Download the following finetuned LLMs and place them in the resources folder of this repository. The link will get you to the university server. Pushing the Download button (at the top-right corner) will save the files as a ```tar``` file that you need to unpack: 
    1. [BERT-go-emotion](https://vu.data.surfsara.nl/index.php/s/VjHn1AHgizlzov6)
    2. [Multilingual-BERT-Conversational-triple-extraction](https://vu.data.surfsara.nl/index.php/s/xL9fPrqIq8bs6NH)
    3. [XLM-RoBERTa-DialogueAct-classification](https://vu.data.surfsara.nl/index.php/s/dw0YCJAVFM870DT)
