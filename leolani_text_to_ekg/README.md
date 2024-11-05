@@ -16,7 +16,7 @@ You also need to have sufficient memory to run the Docker image, which 8.73GB!
 1. Download and install [Docker](https://www.docker.com/get-started/)
 2. Download and install [GraphDB Free](https://graphdb.ontotext.com/)
 3. Open GraphDB (opens as a localhost in your browser) and create a repository called ‘sandbox’:
-   1. Click Setup → Repositories, see image:  <img height="200" src="./images/GDB-setup.png" width="00"/>
+   1. Click Setup → Repositories, see image:  <img height="200" src="./images/GDB-setup.png" width="200"/>
    2. Click Create new repository → GraphDB Free 
       1. Repository ID should be ```sandbox```
       2. Click on “Enable context index” 
