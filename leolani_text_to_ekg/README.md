@@ -3,8 +3,8 @@
 This repository contains the instructions and files to run the Docker version of a Leolani conversational agent.
 You can chat with the conversational agent, which tries to interpret the interaction and store the interpretation
 in a so-called episodic Knowledge Graph or eKG. It will process statements, opinions and claims and it will try to answer questions
-by querying the eKG. It also reasons over the knowledge and the eKG. The reasoning may result in thoughts that is
-expresses in the chat as statements, comments and questions.
+by querying the eKG. It also reasons over the knowledge in the eKG. This reasoning may result in so-called ```thoughts``` that are
+expressed in the chat as statements, comments or questions to the user.
 
 The agent has been built from the Leolani [platform](https://github.com/leolani) and specififically using the repository: [cltl-text-to-ekg-app](https://github.com/leolani/cltl-text-to-ekg-app).
 The docker image can be pulled from DockerHub: [piekvossen/leolani-text-to-ekg](https://hub.docker.com/repository/docker/piekvossen/leolani-text-to-ekg)
@@ -73,4 +73,5 @@ Wait until the browser page refreshes and the following page shows up with a ![C
 7. It may happen that thoughts, questions, answers get mixed due to parallel processing of the input signals. This may be confusing.
 8. Finally, the thoughts are sometimes abstract and surrealistic as her knowledge is limited.
 9. The captured interaction is stored as data in the folder named ‘storage’ in the same folder as the docker configuration. One of the subfolders in storage is called “emissor”. This folder will contain a separate subfolder for each interaction, a so-called scenario. Six scenarios are shown in the figure below, all happening on the same day. In the case of the chatonly configuration, the scenario contains two json files and another subfolder “pdf” with the extracted triples. The structure of the storage is further explained in the lecture.
-10. After you say “goodbye” or “bye” an interaction is closed. While the docker is running you can continue by saying “yes” again which will start a new scenario, asking again for you name. Note that in the robot version, the face recognition may recognise you again and you do not say your name.
+10. After you say “goodbye” an interaction is closed and the emissor data are flushed to disk in the storage folder. If you kill the application without saying "goodbye", there is a risk that not all data are saved.
+
