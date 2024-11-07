@@ -2,6 +2,8 @@ import abc
 import uuid
 import numpy as np
 from enum import Enum, auto
+from dataclasses import dataclass
+from typing import Generic, TypeVar, List, Optional
 import time
 import os
 import cltl.combot
@@ -11,8 +13,9 @@ from emissor.persistence.persistence import ScenarioController
 from emissor.representation.container import MultiIndex
 from emissor.representation.scenario import Modality, Signal, Scenario, ScenarioContext, Annotation, Mention
 from emissor.representation.scenario import TextSignal, ImageSignal
-from cltl.combot.event.emissor import AnnotationEvent, TextSignalEvent, ImageSignalEvent
+from cltl.combot.event.emissor import AnnotationEvent, TextSignalEvent, ImageSignalEvent, Agent
 from cltl.combot.infra.time_util import timestamp_now
+from typing import Optional
 
 
 class Action(Enum):
@@ -30,6 +33,10 @@ class Action(Enum):
     TeleportFull = auto()
     Look = auto()
 
+@dataclass
+class ApplicationContext(ScenarioContext):
+    speaker: Agent
+
 class LeolaniChatClient():
 
     def __init__(self, emissor_path:str, agent="Leolani", human="Alice"):
@@ -41,27 +48,27 @@ class LeolaniChatClient():
             Modality.TEXT.name.lower(): "./text.json",
             Modality.IMAGE.name.lower(): "./image.json",
         }
-        self._agent=agent
-        self._human=human
+        self._agent= Agent(name=agent, uri=f"http://cltl.nl/leolani/world/{agent.lower()}")
+        self._human= Agent(name=human, uri=f"http://cltl.nl/leolani/world/{human.lower()}")
         self._scenario_storage = ScenarioStorage(emissor_path)
-        self._scenario_context =  ScenarioContext(agent)
+        self._scenario_context =  ApplicationContext(self._agent.name, self._human)
         scenario_start = timestamp_now()
         self._scenario_id = str(uuid.uuid4())
-        self._scenario =self._scenario_storage.create_scenario(self._scenario_id, scenario_start, None, self._scenario_context, signals)
+        self._scenario_controller =self._scenario_storage.create_scenario(self._scenario_id, scenario_start, None, self._scenario_context, signals)
         self._scenario_path = os.path.join(emissor_path, self._scenario_id)
         self._image_path = os.path.join(self._scenario_path, "image")
         if not os.path.exists(self._image_path):
             os.mkdir(self._image_path)
 
     def _add_utterance(self, speaker_name, utterance):
-        signal = TextSignal.for_scenario(self._scenario, timestamp_now(), timestamp_now(), None, utterance)
+        signal = TextSignal.for_scenario(self._scenario_controller, timestamp_now(), timestamp_now(), None, utterance)
         TextSignalEvent.add_agent_annotation(signal, speaker_name)
-        self._scenario.append_signal(signal)
+        self._scenario_controller.append_signal(signal)
 
     def _add_action(self, action:Action):
-        signal = TextSignal.for_scenario(self._scenario, timestamp_now(), timestamp_now(), None, action.name)
+        signal = TextSignal.for_scenario(self._scenario_controller, timestamp_now(), timestamp_now(), None, action.name)
         TextSignalEvent.add_agent_annotation(signal, "ACTION")
-        self._scenario.append_signal(signal)
+        self._scenario_controller.append_signal(signal)
 
     def _add_image(self, objectName, objectType, bounds, image):
         imageFilePath = os.path.join(self._image_path, objectName+".jpg")
@@ -75,7 +82,7 @@ class LeolaniChatClient():
         image_array = np.zeros((resolution.height, resolution.width, 3), dtype=np.uint8)
         depth_array = np.zeros((resolution.height, resolution.width), dtype=np.uint8)
         image = Image(image_array, SYSTEM_VIEW.to_diagonal(), depth_array)
-        signal = ImageSignal.for_scenario(self._scenario.id, timestamp_now(), timestamp_now(), imageFilePath, image.bounds.to_diagonal())
+        signal = ImageSignal.for_scenario(self._scenario_controller.id, timestamp_now(), timestamp_now(), imageFilePath, image.bounds.to_diagonal())
 
         # TODO If annotation is needed: create annotation with type name, annotation data, annotation source name
         # Bounds() takes x_0, x_1, y_0, y_1 as arguments, to_diagonal converts it to x_0, y0, x_1, y_1 
@@ -85,10 +92,12 @@ class LeolaniChatClient():
         annotation = Annotation(objectType, annotation_data, "Ai2Thor", int(time.time()))
         mention = Mention(str(uuid.uuid4()), [segment], [annotation])
         signal.mentions.append(mention)
-        self._scenario.append_signal(signal)
+        self._scenario_controller.append_signal(signal)
 
     def _save_scenario(self):
-        self._scenario_storage.save_scenario(self._scenario)
+        scenario_end = timestamp_now()
+        self._scenario_controller.scenario.ruler.end = scenario_end
+        self._scenario_storage.save_scenario(self._scenario_controller)
 
 
 if __name__ == "__main__":
