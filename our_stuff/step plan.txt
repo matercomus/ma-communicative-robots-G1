@@ -1,0 +1,42 @@
+Room description:
+Robot: Explain to me in detail the room description
+Human: I saw a living room with chair and a table
+*Clarifying Questions*
+Robot: Oh! How many chairs and tables did you see?
+Human: I saw 4 chairs and 1 table
+Robot: What color are these items?
+Human: Brown and white 
+Robot: Do you see any other items?
+Human: I see a painitng, chair and windows
+Robot: Asks for more details etc.
+
+Short object description:
+Robot: How does the item look like?
+Human: It looks like a painting.
+*No details necessary, human sees the painting constantly*
+
+Location Classification:
+Robot: I spawned in a room!
+Using gpt4o, im 75% sure its a living room.
+Robot: I think I spawned in a living room. I see 4 blue chairs, 1 white table, a door, and a painting!
+Robot: Should I look around in the room?
+Human: Yes/no
+Do 360
+Robot: I also saw items: ………
+
+Metadata:
+Detects all instances of described object type
+Robot: Should I teleport to "Painting1" to get a better look?
+Human: Yes
+Teleport
+
+Object Classification
+Robot: The painting depicts a black silhouette with a … *detailed description*. Is this the right painting?
+Human: No
+Robot: Okay, lets try Painting2? (until no longer instances of object in room)
+Human: Yes
+Robot: I see a rocky mountainscape with … . Is this the right painting?
+
+If yes: we got it
+
+If no: Teleport to new room
