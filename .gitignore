@@ -147,3 +147,9 @@ projects/.DS_Store
 
 # models
 *.pt
+combots-venv-new/bin
+combots-venv-new/share/jupyter/kernels/python3
+combots_venv
+combots_venv
+combots-venv-new
+our_stuff/emissor
