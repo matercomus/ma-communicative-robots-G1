@@ -10,9 +10,9 @@ import random
 from openaiapi import analyze_prompt, analyze_image
 from utils import numpy_to_base64
 import math
+import re
 sys.path.insert(0, os.path.abspath("../emissor_chat"))
 from leolani_client import LeolaniChatClient, Action
-import re
 
 # Get the current working directory
 current_dir = os.getcwd()
@@ -296,10 +296,11 @@ print("All painting positions in the room:", all_painting_positions)
 event = controller.step(action="GetReachablePositions")
 reachable_positions = event.metadata["actionReturn"]
 
-painting_position = get_object_positions(controller, "Painting")
+# painting_position = get_object_positions(controller, "Painting")
+# print(f"Paiting pos: {painting_position}")
 
-event = teleport_in_front_of_object(controller, painting_position, reachable_positions)
-Image.fromarray(event.frame)
+# event = teleport_in_front_of_object(controller, painting_position, reachable_positions)
+# Image.fromarray(event.frame)
 
 
 # We could probably do this automatically, but we could also ask user to ask robot to look up or down
@@ -310,8 +311,6 @@ Image.fromarray(event.frame)
 
 
 # ## Test Interaction
-
-
 
 
 emissor_path = "./emissor"
@@ -455,35 +454,35 @@ leolaniClient._add_utterance(AGENT, utterance)
 # use chatgpt to describe image
 # do so until image is found or no instances left
 
-matched_object = "Painting"  # placeholder
+# matched_object = "Painting"  # placeholder
 
-object_positions = get_object_positions(controller, matched_object)
+# object_positions = get_object_positions(controller, matched_object)
 
-for i in range(len(object_positions)):
-    position = object_positions[i]
-    event = teleport_in_front_of_object(controller, position, reachable_positions)
+# for i in range(len(object_positions)):
+#     position = object_positions[i]
+#     event = teleport_in_front_of_object(controller, position, reachable_positions)
 
-    description = analyze_image(
-        base64_string,
-        api_key=api_key,
-        prompt=f"describe {matched_object} in great detail",
-    )
-    utterance = description[0]["choices"][0]["message"]["content"]
+#     description = analyze_image(
+#         base64_string,
+#         api_key=api_key,
+#         prompt=f"describe {matched_object} in great detail",
+#     )
+#     utterance = description[0]["choices"][0]["message"]["content"]
 
-    print(AGENT + ">" + utterance + "Was this the item you were looking for?")
-    leolaniClient._add_utterance(
-        AGENT, utterance + "Was this the item you were looking for?"
-    )
-    if input("Type yes if so...") == "yes":
-        print(HUMAN + ">" + "yes")
-        leolaniClient._add_utterance(HUMAN, "yes")
-        break
-    else:
-        print(HUMAN + ">" + "no")
-        leolaniClient._add_utterance(HUMAN, "no")
-        continue
+#     print(AGENT + ">" + utterance + "Was this the item you were looking for?")
+#     leolaniClient._add_utterance(
+#         AGENT, utterance + "Was this the item you were looking for?"
+#     )
+#     if input("Type yes if so...") == "yes":
+#         print(HUMAN + ">" + "yes")
+#         leolaniClient._add_utterance(HUMAN, "yes")
+#         break
+#     else:
+#         print(HUMAN + ">" + "no")
+#         leolaniClient._add_utterance(HUMAN, "no")
+#         continue
 
-print("Teleport to new room if item isn't found")
+# print("Teleport to new room if item isn't found")
 
 
 # In[ ]:
@@ -495,7 +494,7 @@ print("Teleport to new room if item isn't found")
 # In[47]:
 
 
-leolaniClient._save_scenario()
+# leolaniClient._save_scenario()
 
 
 # ###Room description
