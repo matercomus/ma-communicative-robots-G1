@@ -4,11 +4,20 @@ from PIL import Image
 import base64
 import io
 from ai2thor.controller import Controller
-from PIL import Image
 import copy
 import os
 import random
-from dotenv import load_dotenv
+import csv
+
+
+def load_unique_object_list(csv_file_path):
+    with open(csv_file_path, mode="r") as file:
+        csv_reader = csv.reader(file)
+        # Skip the header
+        next(csv_reader)
+        # Read the rest of the rows into a list
+        unique_object_list = [row[0] for row in csv_reader if row]
+    return unique_object_list
 
 
 def numpy_to_base64(image_array, image_format="PNG"):
@@ -34,9 +43,9 @@ def numpy_to_base64(image_array, image_format="PNG"):
 
 
 def setup(env="colab"):
-    if env == "colab":
-        # Colab
+    from dotenv import load_dotenv
 
+    if env == "colab":
         os.system("pip install --upgrade ai2thor --quiet")
         os.system("pip install ai2thor-colab prior --upgrade &> /dev/null")
         os.system("pip install python-dotenv")
@@ -46,23 +55,12 @@ def setup(env="colab"):
         import ai2thor_colab
 
         ai2thor_colab.start_xserver()
-
-        from dotenv import load_dotenv
-
         # Load the .env file
         load_dotenv()
-
         # OpenAI API Key
         api_key = os.getenv("OPENAI_API_KEY")
+
     if env == "local":
-        # Matt
-
-        # sys.path.append(os.path.abspath('../combots-venv-new/lib/python3.12/site-packages'))
-        # %pip install cltl.combot --break-system-packages
-        # %pip install python-dotenv
-
-        from dotenv import load_dotenv
-
         # Get the current working directory
         current_dir = os.getcwd()
         # Construct the relative path to the .env file
@@ -72,6 +70,11 @@ def setup(env="colab"):
 
         # OpenAI API Key
         api_key = os.getenv("OPENAI_API_KEY")
+
+    else:
+        raise ValueError("Invalid environment. Use 'colab' or 'local'.")
+
+    return api_key
 
 
 def load_dataset(house: int = 11):
@@ -189,7 +192,6 @@ def get_object_positions(controller, matched_object):
 import re
 
 
-
 def interactive_object_match(
     api_key: str,
     human_object_description: str,
@@ -225,7 +227,11 @@ def interactive_object_match(
             llm_response = llm_response[0]
         if isinstance(llm_response, list) and llm_response:  # Non-empty list
             llm_response = llm_response[0]
-        if isinstance(llm_response, dict) and "choices" in llm_response and llm_response["choices"]:
+        if (
+            isinstance(llm_response, dict)
+            and "choices" in llm_response
+            and llm_response["choices"]
+        ):
             return llm_response["choices"][0]["message"]["content"]
 
         return llm_response
@@ -287,8 +293,12 @@ def interactive_object_match(
 
                 if user_input_lower in matched_objects_lower:
                     # Find the original matched object that corresponds to the user's selection
-                    selected_object = matched_objects[matched_objects_lower.index(user_input_lower)]
-                    success_message = f"Great! '{selected_object}' successfully matched."
+                    selected_object = matched_objects[
+                        matched_objects_lower.index(user_input_lower)
+                    ]
+                    success_message = (
+                        f"Great! '{selected_object}' successfully matched."
+                    )
                     leolaniClient._add_utterance(AGENT, success_message)
                     print(f"{AGENT}>{success_message}")
                     return selected_object
@@ -303,14 +313,15 @@ def interactive_object_match(
                     current_description = clarifying_question
         else:
             # No matched objects found
-            error_message = "I couldn't find a matching object. Can you provide more details?"
+            error_message = (
+                "I couldn't find a matching object. Can you provide more details?"
+            )
             leolaniClient._add_utterance(AGENT, error_message)
             print(f"{AGENT}>{error_message}")
             clarifying_question = input().strip()
             leolaniClient._add_utterance(HUMAN, clarifying_question)
             print(f"{HUMAN}>{clarifying_question}")
             current_description += " " + clarifying_question
-
 
 
 def find_all_object_positions(controller, object_type, num_rotations=3):
@@ -358,7 +369,9 @@ def teleport_to_pos(pos, visited_positions, controller):
     """
     print(f"Teleporting to position: {pos}")
     # rotation = random.choice(range(0, 360, 90))  # Optional: choose a rotation
-    event = controller.step(action="Teleport", position=pos ,rotation={'x':0, 'y':0, 'z':0})
+    event = controller.step(
+        action="Teleport", position=pos, rotation={"x": 0, "y": 0, "z": 0}
+    )
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
 
@@ -507,7 +520,7 @@ def find_object_and_confirm(
                     reachable_positions, visited_positions, farthest_position
                 )
                 print("Teleporting to a new location to continue the search.")
-                teleport_to_pos(farthest_position)
+                teleport_to_pos(farthest_position, visited_positions, controller)
                 continue  # Continue the while loop
         else:
             # Iterate over the found object positions
@@ -521,8 +534,9 @@ def find_object_and_confirm(
                 )
 
                 # Get the current frame after teleporting
-                frame = controller.last_event.frame
-                base64_string = numpy_to_base64(frame)
+                # frame = controller.last_event.frame
+                base64_string = numpy_to_base64(event.frame)
+                Image.fromarray(event.frame)  # image for clearity
 
                 # Analyze the image using the OpenAI API
                 description = analyze_image(
@@ -617,7 +631,9 @@ def random_teleport(controller):
     position = random.choice(reachable_positions)
     # rotation = random.choice(range(360))
     print("Teleporting the agent to", position)
-    event = controller.step(action="Teleport", position=position, rotation={'x':0, 'y':0, 'z':0})
+    event = controller.step(
+        action="Teleport", position=position, rotation={"x": 0, "y": 0, "z": 0}
+    )
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
     Image.fromarray(event.frame)  # image for clearity
