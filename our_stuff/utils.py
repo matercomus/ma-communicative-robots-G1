@@ -189,6 +189,7 @@ def get_object_positions(controller, matched_object):
 import re
 
 
+
 def interactive_object_match(
     api_key: str,
     human_object_description: str,
@@ -199,16 +200,9 @@ def interactive_object_match(
 ):
     """
     Interactively matches a human description of an object to one from a given list using an LLM.
-    The function continues to refine guesses based on user confirmation or denial.
-
-    Args:
-        api_key (str): The API key for accessing the LLM.
-        human_object_description (str): A description of the object to match.
-        unique_object_list (list): The list of unique objects to match against.
-
-    Returns:
-        str: The confirmed object from the user.
-        list: The matched object(s) from the list based on the LLM's response.
+    If a single object is suggested, the user is asked for a yes/no confirmation.
+    If multiple objects are suggested, the user is asked to select one of the suggested options.
+    Case-insensitive matching is used when the user selects from multiple matches.
     """
 
     def ask_llm(description: str, objects: list) -> str:
@@ -219,29 +213,22 @@ def interactive_object_match(
             f"The list of objects is: {object_list_str}. "
             f"Your task is to match the following description to one or more objects from the list: \n"
             f"'{description}'\n\n"
-            "If you have a single best guess, respond with: 'To be sure, would you describe your object as {object}? '\n"
+            "If you have a single best guess, respond with: 'To be sure, would you describe your object as {object}?'\n"
             "If you are unsure and need clarification between a few options, respond with: "
-            "'To be sure, would you describe your object as {object1} or {object2}? '"
+            "'To be sure, would you describe your object as {object1} or {object2}?'"
             "Only use objects from the list."
         )
-        # Make sure the response is extracted correctly from the LLM
         llm_response = analyze_prompt(api_key=api_key, prompt=prompt)
 
+        # Extract the response content if needed
         if isinstance(llm_response, tuple):
             llm_response = llm_response[0]
-
-        if (
-            isinstance(llm_response, list) and llm_response
-        ):  # Check if it's a non-empty list
-            llm_response = llm_response[0]  # Access the first element if it's a list
-
-        if (
-            isinstance(llm_response, dict)
-            and "choices" in llm_response
-            and llm_response["choices"]
-        ):
+        if isinstance(llm_response, list) and llm_response:  # Non-empty list
+            llm_response = llm_response[0]
+        if isinstance(llm_response, dict) and "choices" in llm_response and llm_response["choices"]:
             return llm_response["choices"][0]["message"]["content"]
-        return llm_response  # Return raw response if format is unexpected
+
+        return llm_response
 
     current_description = human_object_description
 
@@ -257,45 +244,73 @@ def interactive_object_match(
         )
 
         if matched_objects:
-            # Ask the user for confirmation or denial
-            confirmation_prompt = f"Is this correct? (yes/no): "
-            leolaniClient._add_utterance(AGENT, confirmation_prompt)
-            print(f"{AGENT}>{confirmation_prompt}")
-            user_input = input().strip().lower()
-            leolaniClient._add_utterance(HUMAN, user_input)
-            print(f"{HUMAN}>{user_input}")
+            if len(matched_objects) == 1:
+                # Only one object suggested
+                confirmation_prompt = "Is this correct? (yes/no): "
+                leolaniClient._add_utterance(AGENT, confirmation_prompt)
+                print(f"{AGENT}>{confirmation_prompt}")
+                user_input = input().strip().lower()
+                leolaniClient._add_utterance(HUMAN, user_input)
+                print(f"{HUMAN}>{user_input}")
 
-            if user_input == "yes":
-                success_message = "Great! Object successfully matched."
-                leolaniClient._add_utterance(AGENT, success_message)
-                print(f"{AGENT}>{success_message}")
-                return (
-                    matched_objects[0] if len(matched_objects) == 1 else matched_objects
-                )
-            elif user_input == "no":
-                refine_message = "Let's refine the search. Can you provide more details or clarify the description?"
-                leolaniClient._add_utterance(AGENT, refine_message)
-                print(f"{AGENT}>{refine_message}")
-                clarifying_question = input().strip()
-                leolaniClient._add_utterance(HUMAN, clarifying_question)
-                print(f"{HUMAN}>{clarifying_question}")
-                current_description = (
-                    clarifying_question  # Update the description with the new input
-                )
+                if user_input == "yes":
+                    success_message = "Great! Object successfully matched."
+                    leolaniClient._add_utterance(AGENT, success_message)
+                    print(f"{AGENT}>{success_message}")
+                    return matched_objects[0]
+                elif user_input == "no":
+                    refine_message = "Let's refine the search. Can you provide more details or clarify the description?"
+                    leolaniClient._add_utterance(AGENT, refine_message)
+                    print(f"{AGENT}>{refine_message}")
+                    clarifying_question = input().strip()
+                    leolaniClient._add_utterance(HUMAN, clarifying_question)
+                    print(f"{HUMAN}>{clarifying_question}")
+                    current_description = clarifying_question
+                else:
+                    error_message = "Please respond with 'yes' or 'no'."
+                    leolaniClient._add_utterance(AGENT, error_message)
+                    print(f"{AGENT}>{error_message}")
+
             else:
-                error_message = "Please respond with 'yes' or 'no'."
-                leolaniClient._add_utterance(AGENT, error_message)
-                print(f"{AGENT}>{error_message}")
+                # Multiple objects suggested
+                objects_str = " or ".join(matched_objects)
+                selection_prompt = f"I've found multiple possible matches: {objects_str}. Which one best matches your object?"
+                leolaniClient._add_utterance(AGENT, selection_prompt)
+                print(f"{AGENT}>{selection_prompt}")
+                user_input = input().strip()
+                leolaniClient._add_utterance(HUMAN, user_input)
+                print(f"{HUMAN}>{user_input}")
+
+                # Compare in a case-insensitive manner
+                user_input_lower = user_input.lower()
+                matched_objects_lower = [obj.lower() for obj in matched_objects]
+
+                if user_input_lower in matched_objects_lower:
+                    # Find the original matched object that corresponds to the user's selection
+                    selected_object = matched_objects[matched_objects_lower.index(user_input_lower)]
+                    success_message = f"Great! '{selected_object}' successfully matched."
+                    leolaniClient._add_utterance(AGENT, success_message)
+                    print(f"{AGENT}>{success_message}")
+                    return selected_object
+                else:
+                    # User didn't pick one of the offered objects
+                    refine_message = "Let's refine the search. Can you provide more details or clarify the description?"
+                    leolaniClient._add_utterance(AGENT, refine_message)
+                    print(f"{AGENT}>{refine_message}")
+                    clarifying_question = input().strip()
+                    leolaniClient._add_utterance(HUMAN, clarifying_question)
+                    print(f"{HUMAN}>{clarifying_question}")
+                    current_description = clarifying_question
         else:
-            error_message = (
-                "I couldn't find a matching object. Can you provide more details?"
-            )
+            # No matched objects found
+            error_message = "I couldn't find a matching object. Can you provide more details?"
             leolaniClient._add_utterance(AGENT, error_message)
             print(f"{AGENT}>{error_message}")
             clarifying_question = input().strip()
             leolaniClient._add_utterance(HUMAN, clarifying_question)
             print(f"{HUMAN}>{clarifying_question}")
             current_description += " " + clarifying_question
+
 
 
 def find_all_object_positions(controller, object_type, num_rotations=3):
@@ -342,8 +357,8 @@ def teleport_to_pos(pos, visited_positions, controller):
         pos (dict): The position to teleport to.
     """
     print(f"Teleporting to position: {pos}")
-    rotation = random.choice(range(0, 360, 90))  # Optional: choose a rotation
-    event = controller.step(action="Teleport", position=pos, rotation=rotation)
+    # rotation = random.choice(range(0, 360, 90))  # Optional: choose a rotation
+    event = controller.step(action="Teleport", position=pos ,rotation={'x':0, 'y':0, 'z':0})
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
 
@@ -600,9 +615,9 @@ def random_teleport(controller):
     # Teleport somewhere random (Only happens once at the start)
     visited_positions = []
     position = random.choice(reachable_positions)
-    rotation = random.choice(range(360))
-    print("Teleporting the agent to", position, " with rotation", rotation)
-    event = controller.step(action="Teleport", position=position, rotation=rotation)
+    # rotation = random.choice(range(360))
+    print("Teleporting the agent to", position)
+    event = controller.step(action="Teleport", position=position, rotation={'x':0, 'y':0, 'z':0})
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
     Image.fromarray(event.frame)  # image for clearity
