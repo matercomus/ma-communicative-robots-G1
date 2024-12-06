@@ -610,12 +610,12 @@ def find_object_and_confirm(
 def init_chat_client(emissor_path="./emissor", AGENT="Ai2Thor", HUMAN="Human"):
     # adding to the system path
     sys.path.insert(0, os.path.abspath("../emissor_chat"))
-    from leolani_client import Action, LeolaniChatClient
+    from leolani_client import LeolaniChatClient
 
     leolaniClient = LeolaniChatClient(
         emissor_path=emissor_path, agent=AGENT, human=HUMAN
     )
-    return AGENT, HUMAN, leolaniClient
+    return leolaniClient
 
 
 def add_utterance(WHO, utterance, leolaniClient):

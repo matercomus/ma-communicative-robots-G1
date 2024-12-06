@@ -17,29 +17,22 @@ from ai2thor.controller import Controller
 def main():
     csv_file_path = os.path.abspath("unique_object_list.csv")
     unique_object_list = load_unique_object_list(csv_file_path)
-    print("Setting up...")
     api_key = setup(env="local")
     house = load_dataset()
-    # get_top_down_frame()
     controller = Controller(scene=house, visibilityDistance=10, width=750, height=750)
     event = controller.step(action="GetReachablePositions")
     reachable_positions = event.metadata["actionReturn"]
-    AGENT, HUMAN, leolaniClient = init_chat_client()
+
+    AGENT = input("Type the agent name...")
+    HUMAN = input("Type the human name...")
+    leolaniClient = init_chat_client(AGENT, HUMAN)
 
     add_utterance(AGENT, f"Hi {HUMAN}. What do you see in the room?", leolaniClient)
 
-    # grab img of an item to look for
-    # example: look for a tv in a room
-    event = controller.step(
-        action="Teleport", position={"x": 2.75, "y": 0.9009997844696045, "z": 1.0}
-    )
-    Image.fromarray(event.frame)
-
-    # human_room_description = input("Type what you see...")
-    human_room_description = (
-        "there is a table. 5 chairs. there is a window. its probably a living room."
-    )
-    # Still need to use the room description.
+    human_room_description = input("Type the room description...")
+    # human_room_description = (
+    #     "there is a table. 5 chairs. there is a window. its probably a living room."
+    # )
     add_utterance(HUMAN, human_room_description, leolaniClient)
 
     # claryfying questions
@@ -51,24 +44,25 @@ def main():
     utterance = claryfying_questions_response[0]["choices"][0]["message"]["content"]
     add_utterance(AGENT, utterance, leolaniClient)
 
-    human_room_description_clarified = "The table is blue, chairs are all black. The window is on the left wall in the same corner as th balcony doors."
-    add_utterance(HUMAN, human_room_description, leolaniClient)
+    # human_room_description_clarified = "The table is blue, chairs are all black. The window is on the left wall in the same corner as th balcony doors."
+    human_room_description_clarified = input("Type the clarified room description...")
+    add_utterance(HUMAN, human_room_description_clarified, leolaniClient)
 
     utterance = "Describe the object I should look for."
     add_utterance(AGENT, utterance, leolaniClient)
 
-    human_obj_description = (
-        "It's a dark painting with trees a moon. some clouds, a river."
-    )
-    add_utterance(HUMAN, human_room_description, leolaniClient)
+    # human_obj_description = (
+    #     "It's a dark painting with trees a moon. some clouds, a river."
+    # )
+    human_obj_description = input("Type the object description...")
+    add_utterance(HUMAN, human_obj_description, leolaniClient)
 
     # this is where the interactive object match comes :
     # based on "dark painting with trees ...", did you mean "Painting"?
 
-    human_object_description = human_obj_description
     matched_object = interactive_object_match(
         api_key=api_key,
-        human_object_description=human_object_description,
+        human_object_description=human_obj_description,
         unique_object_list=unique_object_list,
         HUMAN=HUMAN,
         AGENT=AGENT,
