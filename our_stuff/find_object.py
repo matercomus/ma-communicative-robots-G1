@@ -14,10 +14,10 @@ from utils import (
 from ai2thor.controller import Controller
 
 
-def main():
+def main(env="colab"):
     csv_file_path = os.path.abspath("unique_object_list.csv")
     unique_object_list = load_unique_object_list(csv_file_path)
-    api_key = setup(env="local")
+    api_key = setup(env=env)
     house = load_dataset()
     controller = Controller(scene=house, visibilityDistance=10, width=750, height=750)
     event = controller.step(action="GetReachablePositions")
@@ -91,4 +91,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(env="local")
