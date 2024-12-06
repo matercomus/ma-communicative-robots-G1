@@ -1,4 +1,17 @@
-from utils import *
+import os
+from PIL import Image
+from utils import (
+    setup,
+    load_dataset,
+    init_chat_client,
+    add_utterance,
+    load_unique_object_list,
+    analyze_prompt,
+    interactive_object_match,
+    random_teleport,
+    find_object_and_confirm,
+)
+from ai2thor.controller import Controller
 
 
 def main():
@@ -79,6 +92,7 @@ def main():
         print("Successfully found the object.")
     else:
         print("Object not found after searching all locations.")
+
     leolaniClient._save_scenario()
 
 
