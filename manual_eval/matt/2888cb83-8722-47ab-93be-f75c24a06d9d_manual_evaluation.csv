@@ -1,0 +1,19 @@
+Turn	Speaker	Response	Reference Response	Overall Human Rating	Interesting	Engaging	Specific	Relevant	Correct	Semantically Appropriate	Understandable	Fluent
+0	LEOLANI	Hi, my name is Leolani and I am happy to talk to you! What is your name, please only give me your name?										
+1	LEOLANI	Hi Brian! Please, tell me something about yourself.										
+2	SPEAKER	I am a builder										
+3	LEOLANI	Brian is a builder too, isn't he?	I see.	2	2	2	2	2	2	2	2	2
+4	SPEAKER	Yes										
+5	LEOLANI	You are a construction worker who builds houses, bridges, and other structures.	You are a construction worker who builds houses, bridges, and other structures.	4	3	3	4	4	4	3	4	4
+6	SPEAKER	Brian likes kebab										
+7	LEOLANI	Brian is a builder, he builds houses.	I also know that Brian is a builder, he builds houses.	3	3	3	4	4	3	3	3	3
+8	SPEAKER	Brian has dreams										
+9	LEOLANI	They construct buildings for people to live in.	Good to know.	2	2	2	2	2	2	2	2	2
+10	SPEAKER	What do you know about me										
+11	LEOLANI	A person told me about Brian, who likes dogs. Brian doesn't like Angus. He likes 3D printing and drinking. Brian is a builder, afraid of snakes, tall, has dreams, wants to party, thinks Angus smells bad, and dislikes musicals.	A person told me about you the following, you like dogs. You don't like Angus. You like 3D printing and drinking. You are a builder, afraid of snakes, tall, have dreams, want to party, think Angus smells bad, and dislike musicals.	4	3	3	4	4	4	3	4	4
+12	SPEAKER	Brian thinks Angus doesn't like Brian										
+13	LEOLANI	A human being is alive, they feel emotions, and some people's names are very special to them.	Good to know.	2	2	2	2	2	2	2	2	2
+14	SPEAKER	Brian wants to eat cereal										
+15	LEOLANI	You're very happy to learn about emotions now. Emotions are feelings that make us feel different, like happiness or sadness.	Good to know.	2	2	2	2	2	2	2	2	2
+16	SPEAKER	How are you										
+17	LEOLANI	Goodbye Brian! See you soon.										
