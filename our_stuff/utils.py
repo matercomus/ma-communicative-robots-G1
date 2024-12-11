@@ -76,7 +76,7 @@ def setup(env="colab"):
     return api_key
 
 
-def load_dataset(house: int = 11):
+def load_dataset(house: int = 6666):
     import prior
 
     dataset = prior.load_dataset("procthor-10k")
@@ -456,6 +456,7 @@ def find_object_and_confirm(
     HUMAN,
     leolaniClient,
     visited_positions,
+    human_room_descriptions,
     max_rotations=3,
 ):
     """
@@ -540,11 +541,24 @@ def find_object_and_confirm(
                 base64_string_far = numpy_to_base64(event_far.frame)
                 Image.fromarray(event_far.frame)  # image for clearity
 
+                human_room_description, human_room_description_clarified = (
+                    human_room_descriptions
+                )
                 # Analyze the image using the OpenAI API
                 description_far = analyze_image(
                     base64_string_far,
                     api_key=api_key,
-                    prompt=f"Describe in detail the objects that {matched_object} is sourrounded by with spatial relations.",
+                    # prompt=f"Describe in detail the objects that {matched_object} is sourrounded by with spatial relations.",
+                    prompt=f"""
+                            Below are descriptions of a room provided by a human and your own previously asked clarifying questions. Use both the human’s initial description and their answers to your clarifying questions to form a comprehensive understanding of the space. Ask yourself: Does the image match the room descriptions? Give the human your answer. Then, describe all objects around {matched_object} using bullet points. For each object, include:
+                            - What the object is and what it looks like.
+                            - Its position relative to {matched_object} (e.g., 'behind', 'to the left').
+                            - (Optional) Approximately how far it is and its orientation.
+                            - (Optional) Any extra details about its purpose or interaction with {matched_object}.
+                            
+                            Human’s initial description: {human_room_description}
+                            More detailed description: {human_room_description_clarified}
+                            """,
                 )
                 utterance = description_far[0]["choices"][0]["message"]["content"]
 
@@ -589,7 +603,10 @@ def find_object_and_confirm(
                     description = analyze_image(
                         base64_string,
                         api_key=api_key,
-                        prompt=f"Describe the {matched_object} in great detail.",
+                        prompt=f"""Describe the {matched_object}, be concise,
+                        focus on the characteristics that make it easily
+                        identifiable and distinguishable from similar objects
+                        (shape, color).""",
                     )
                     utterance = description[0]["choices"][0]["message"]["content"]
 

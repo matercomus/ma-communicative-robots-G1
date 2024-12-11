@@ -30,9 +30,7 @@ def main(env="colab"):
     add_utterance(
         AGENT,
         f"""Hi {HUMAN}. What do you see in the room? Try to
-                  describe the spatial relationships between objects. In th
-                  foreground I see a table with 5 chairs around it. and in the
-                  background there is a window on a wall in the corener.""",
+                  describe the spatial relationships between objects.""",
         leolaniClient,
     )
 
@@ -54,6 +52,8 @@ def main(env="colab"):
     # human_room_description_clarified = "The table is blue, chairs are all black. The window is on the left wall in the same corner as th balcony doors."
     human_room_description_clarified = input("Type the clarified room description...")
     add_utterance(HUMAN, human_room_description_clarified, leolaniClient)
+
+    human_room_descriptions = [human_room_description, human_room_description_clarified]
 
     utterance = "Describe the object I should look for."
     add_utterance(AGENT, utterance, leolaniClient)
@@ -87,6 +87,7 @@ def main(env="colab"):
         HUMAN=HUMAN,
         leolaniClient=leolaniClient,
         visited_positions=visited_positions,
+        human_room_descriptions=human_room_descriptions,
     )
 
     if found:
