@@ -48,7 +48,18 @@ def numpy_to_base64(image_array, image_format="PNG"):
 def setup(env="colab"):
     from dotenv import load_dotenv
 
-    if env == "colab":
+    if env == "local":
+        # Get the current working directory
+        current_dir = os.getcwd()
+        # Construct the relative path to the .env file
+        env_path = os.path.join(current_dir, "../.env")
+        # Load the .env file
+        load_dotenv(env_path)
+
+        # OpenAI API Key
+        api_key = os.getenv("OPENAI_API_KEY")
+
+    else:
         os.system("pip install --upgrade ai2thor --quiet")
         os.system("pip install ai2thor-colab prior --upgrade &> /dev/null")
         os.system("pip install python-dotenv")
@@ -62,20 +73,8 @@ def setup(env="colab"):
         load_dotenv()
         # OpenAI API Key
         api_key = os.getenv("OPENAI_API_KEY")
-
-    if env == "local":
-        # Get the current working directory
-        current_dir = os.getcwd()
-        # Construct the relative path to the .env file
-        env_path = os.path.join(current_dir, "../.env")
-        # Load the .env file
-        load_dotenv(env_path)
-
-        # OpenAI API Key
-        api_key = os.getenv("OPENAI_API_KEY")
-
-    else:
-        raise ValueError("Invalid environment. Use 'colab' or 'local'.")
+    # else:
+    #     raise ValueError("Invalid environment. Use 'colab' or 'local'.")
 
     return api_key
 
