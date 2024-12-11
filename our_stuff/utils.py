@@ -133,7 +133,7 @@ def teleport_in_front_of_object(
     target_position = {
         "x": object_position["x"] - distance,
         "y": object_position["y"],
-        "z": object_position["z"],
+        "z": object_position["z"] - distance,
     }
 
     # Find the closest reachable position
@@ -149,15 +149,30 @@ def teleport_in_front_of_object(
             min_distance = dist
             closest_position = position
 
+    # Teleport
+    event = controller.step(
+        action="Teleport", position=closest_position, rotation={"x": 0, "y": 0, "z": 0}
+    )
+
+    # Image.fromarray(event.frame)  # image for clarity
+
+
+    agent_position = controller.last_event.metadata["agent"]["position"]
+    visited_positions.append(agent_position)
+
     # Calculate rotation towards the object
     dx = object_position["x"] - closest_position["x"]
     dz = object_position["z"] - closest_position["z"]
     rotation = math.degrees(math.atan2(dx, dz))
+    print(f"closest_position: {closest_position} Rotation: {rotation}")
 
     # Teleport and rotate
     event = controller.step(
         action="Teleport", position=closest_position, rotation=rotation
     )
+    print(f"Teleporting to position: {closest_position}, after rotation {rotation}")
+    # Image.fromarray(event.frame)  # image for clarity
+
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
 
@@ -458,6 +473,7 @@ def find_object_and_confirm(
     visited_positions,
     human_room_descriptions,
     max_rotations=3,
+    max_teleports=25,  # Add a parameter for the maximum number of teleports
 ):
     """
     Searches for the matched_object in the environment and asks the user for confirmation.
@@ -473,6 +489,7 @@ def find_object_and_confirm(
         leolaniClient: Instance of LeolaniChatClient for communication.
         visited_positions (list): List of positions the agent has visited.
         max_rotations (int): Number of rotations to perform when searching for objects.
+        max_teleports (int): Maximum number of teleports before stopping the search.
 
     Returns:
         bool: True if the object was found and confirmed by the user, False otherwise.
@@ -480,6 +497,7 @@ def find_object_and_confirm(
 
     # Keep track of positions where the object has been searched for
     searched_positions = []
+    teleport_count = 0  # Initialize the teleport counter
 
     while True:
         # Find all positions of the matched object in the current view
@@ -516,11 +534,24 @@ def find_object_and_confirm(
                 return False
             else:
                 # **Plot the trajectory before teleporting**
-                plot_trajectory(
-                    reachable_positions, visited_positions, farthest_position
-                )
+                # plot_trajectory(
+                #     reachable_positions, visited_positions, farthest_position
+                # )
                 print("Teleporting to a new location to continue the search.")
                 teleport_to_pos(farthest_position, visited_positions, controller)
+                teleport_count += 1  # Increment the teleport counter
+
+                # Check if the maximum number of teleports has been reached
+                if teleport_count >= max_teleports:
+                    print(
+                        f"{AGENT}>I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
+                    )
+                    leolaniClient._add_utterance(
+                        AGENT,
+                        f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}.",
+                    )
+                    return False
+
                 continue  # Continue the while loop
         else:
             # Iterate over the found object positions
@@ -539,7 +570,7 @@ def find_object_and_confirm(
                 )
 
                 base64_string_far = numpy_to_base64(event_far.frame)
-                Image.fromarray(event_far.frame)  # image for clearity
+                # Image.fromarray(event_far.frame)  # image for clarity
 
                 human_room_description, human_room_description_clarified = (
                     human_room_descriptions
@@ -548,92 +579,112 @@ def find_object_and_confirm(
                 description_far = analyze_image(
                     base64_string_far,
                     api_key=api_key,
-                    # prompt=f"Describe in detail the objects that {matched_object} is sourrounded by with spatial relations.",
                     prompt=f"""
-                            Below are descriptions of a room provided by a human and your own previously asked clarifying questions. Use both the human’s initial description and their answers to your clarifying questions to form a comprehensive understanding of the space. Ask yourself: Does the image match the room descriptions? Give the human your answer. Then, describe all objects around {matched_object} using bullet points. For each object, include:
-                            - What the object is and what it looks like.
-                            - Its position relative to {matched_object} (e.g., 'behind', 'to the left').
-                            - (Optional) Approximately how far it is and its orientation.
-                            - (Optional) Any extra details about its purpose or interaction with {matched_object}.
-                            
-                            Human’s initial description: {human_room_description}
-                            More detailed description: {human_room_description_clarified}
+                            "First, determine if the image (partly) matches the
+                            descriptions and explain your reasoning. It might
+                            be the same room but from a different point of
+                            view.Then, describe distinguishable objects around
+                            {matched_object} as bullet points. For each object,
+                            include:
+
+                            - What it is and VERY briefly what it looks like.
+                            - Its position relative to {matched_object}
+                            (e.g. 'in front', 'behind', 'to the left' etc,).
+
+                            Human’s initial description:
+                            {human_room_description}
+
+                            Clarified details:
+                            {human_room_description_clarified}"
                             """,
                 )
                 utterance = description_far[0]["choices"][0]["message"]["content"]
 
                 # Communicate with the user
-                agent_message = f"{utterance} Should I get a closer look at the object sorrounded by these objects?"
+                agent_message = f"{utterance} Should I get a closer look at the object surrounded by these objects?"
                 print(f"{AGENT}>{agent_message}")
                 leolaniClient._add_utterance(AGENT, agent_message)
 
                 # Get user input
-                user_input = (
-                    input("Type 'yes' if so, or 'no' to continue: ").strip().lower()
-                )
-                leolaniClient._add_utterance(HUMAN, user_input)
-                print(f"{HUMAN}>{user_input}")
-
-                if user_input == "no":
-                    searched_positions.append(position)
-                    continue
-
-                if user_input == "yes":
-                    print(
-                        f"{AGENT}>Great! Let me have a coser look at the {matched_object}."
-                    )
-                    leolaniClient._add_utterance(
-                        AGENT,
-                        f"Great! Let me have a coser look at the {matched_object}.",
-                    )
-                    # return True
-
-                    # -----------------------------------------------------------------------------------------------
-
-                    # NORMAL
-                    # Teleport in front of the object
-                    event = teleport_in_front_of_object(
-                        controller, position, reachable_positions, visited_positions
-                    )
-
-                    base64_string = numpy_to_base64(event.frame)
-                    Image.fromarray(event.frame)  # image for clearity
-
-                    # Analyze the image using the OpenAI API
-                    description = analyze_image(
-                        base64_string,
-                        api_key=api_key,
-                        prompt=f"""Describe the {matched_object}, be concise,
-                        focus on the characteristics that make it easily
-                        identifiable and distinguishable from similar objects
-                        (shape, color).""",
-                    )
-                    utterance = description[0]["choices"][0]["message"]["content"]
-
-                    # Communicate with the user
-                    agent_message = (
-                        f"{utterance} Was this the item you were looking for?"
-                    )
-                    print(f"{AGENT}>{agent_message}")
-                    leolaniClient._add_utterance(AGENT, agent_message)
-
-                    # Get user input
+                while True:
                     user_input = (
                         input("Type 'yes' if so, or 'no' to continue: ").strip().lower()
                     )
                     leolaniClient._add_utterance(HUMAN, user_input)
                     print(f"{HUMAN}>{user_input}")
 
-                    if user_input == "yes":
-                        print(f"{AGENT}>Great! I've found the {matched_object}.")
-                        leolaniClient._add_utterance(
-                            AGENT, f"Great! I've found the {matched_object}."
-                        )
-                        return True
-
-                    elif user_input == "no":
+                    if user_input == "no":
                         searched_positions.append(position)
-                        continue
+                        break
+
+                    if user_input == "yes":
+                        print(
+                            f"{AGENT}>Great! Let me have a closer look at the {matched_object}."
+                        )
+                        leolaniClient._add_utterance(
+                            AGENT,
+                            f"Great! Let me have a closer look at the {matched_object}.",
+                        )
+                        # NORMAL
+                        # Teleport in front of the object
+                        event = teleport_in_front_of_object(
+                            controller, position, reachable_positions, visited_positions
+                        )
+
+                        base64_string = numpy_to_base64(event.frame)
+                        # Image.fromarray(event.frame)  # image for clarity
+
+                        input("GPT close Press Enter to continue...")
+
+                        # Analyze the image using the OpenAI API
+                        description = analyze_image(
+                            base64_string,
+                            api_key=api_key,
+                            prompt=f"""Describe the {matched_object}, be concise,
+                            focus on the characteristics that make it easily
+                            identifiable and distinguishable from similar objects
+                            (shape, color).""",
+                        )
+                        utterance = description[0]["choices"][0]["message"]["content"]
+
+                        # Communicate with the user
+                        agent_message = (
+                            f"{utterance} Was this the item you were looking for?"
+                        )
+                        print(f"{AGENT}>{agent_message}")
+                        leolaniClient._add_utterance(AGENT, agent_message)
+
+                        # Get user input
+                        while True:
+                            user_input = (
+                                input("Type 'yes' if so, or 'no' to continue: ")
+                                .strip()
+                                .lower()
+                            )
+                            leolaniClient._add_utterance(HUMAN, user_input)
+                            print(f"{HUMAN}>{user_input}")
+
+                            if user_input == "yes":
+                                print(
+                                    f"{AGENT}>Great! I've found the {matched_object}."
+                                )
+                                leolaniClient._add_utterance(
+                                    AGENT, f"Great! I've found the {matched_object}."
+                                )
+                                return True
+
+                            elif user_input == "no":
+                                searched_positions.append(position)
+                                break
+
+                            else:
+                                # Handle unexpected input
+                                error_message = "Please respond with 'yes' or 'no'."
+                                print(f"{AGENT}>{error_message}")
+                                leolaniClient._add_utterance(AGENT, error_message)
+
+                        break
+
                     else:
                         # Handle unexpected input
                         error_message = "Please respond with 'yes' or 'no'."
@@ -657,9 +708,9 @@ def find_object_and_confirm(
                 farthest_position = get_farthest_position(
                     reachable_positions, visited_positions
                 )
-                plot_trajectory(
-                    reachable_positions, visited_positions, farthest_position
-                )
+                # plot_trajectory(
+                #     reachable_positions, visited_positions, farthest_position
+                # )
                 if farthest_position is None:
                     # All positions have been visited
                     print(
@@ -671,6 +722,19 @@ def find_object_and_confirm(
                     )
                     return False
                 teleport_to_pos(farthest_position, visited_positions, controller)
+                teleport_count += 1  # Increment the teleport counter
+
+                # Check if the maximum number of teleports has been reached
+                if teleport_count >= max_teleports:
+                    print(
+                        f"{AGENT}>I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
+                    )
+                    leolaniClient._add_utterance(
+                        AGENT,
+                        f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}.",
+                    )
+                    return False
+
                 continue  # Continue the while loop
 
 
@@ -703,6 +767,6 @@ def random_teleport(controller):
     )
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
-    Image.fromarray(event.frame)  # image for clearity
+    # Image.fromarray(event.frame)  # image for clearity
 
     return visited_positions
