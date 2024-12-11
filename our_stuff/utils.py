@@ -7,7 +7,11 @@ import copy
 import os
 import random
 import csv
+from openaiapi import analyze_image, analyze_prompt
+import matplotlib.pyplot as plt
+import math
 
+import re
 
 def load_unique_object_list(csv_file_path):
     with open(csv_file_path, mode="r") as file:
@@ -109,11 +113,6 @@ def get_top_down_frame():
     return Image.fromarray(top_down_frame)
 
 
-from openaiapi import analyze_image, analyze_prompt
-
-import math
-
-
 def teleport_in_front_of_object(
     controller, object_position, reachable_positions, visited_positions, distance=1.0
 ):
@@ -155,7 +154,6 @@ def teleport_in_front_of_object(
     )
 
     # Image.fromarray(event.frame)  # image for clarity
-
 
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
@@ -203,7 +201,6 @@ def get_object_positions(controller, matched_object):
     return object_positions
 
 
-import re
 
 
 def interactive_object_match(
@@ -430,9 +427,6 @@ def get_farthest_position(reachable_positions, visited_positions):
             max_min_distance = min_distance
             farthest_position = position
     return farthest_position
-
-
-import matplotlib.pyplot as plt
 
 
 def plot_trajectory(reachable_positions, visited_positions, farthest_position):
