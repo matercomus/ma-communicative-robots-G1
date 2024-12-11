@@ -1,20 +1,20 @@
-Turn	Speaker	Response	Reference Response	Overall Human Rating	Interesting	Engaging	Specific	Relevant	Correct	Semantically Appropriate	Understandable	Fluent
-0	LEOLANI	Hi, my name is Leolani and I am happy to talk to you! What is your name, please only give me your name?										
-1	LEOLANI	Hi Jeff! Please, tell me something about yourself.										
-2	SPEAKER	I am a chef										
-3	LEOLANI	I know. I have heard about i before	I know. I have heard this about you before	3	3	2	2	3	2	2	2	2
-4	SPEAKER	Tell me about you										
-5	LEOLANI	someone told me I  jeff and that I know you	Someone told me you are Jeff and that I know you.	2	2	2	3	3	2	2	2	2
-6	SPEAKER	Jeff is from Chicago										
-7	LEOLANI	I am curious. Has a agent ever manufacture in chicago?	Has Jeff ever been manufacturing in Chicago?	2	2	2	2	1	2	2	2	2
-8	SPEAKER	Jeff is the son of Angus										
-9	LEOLANI	I am out of words.	Ok, good to know.	2	1	1	1	1	3	3	3	3
-10	SPEAKER	Tell me about Angus										
-11	LEOLANI	I don't know	I don’t know Angus.	3	3	2	2	3	2	2	2	2
-12	SPEAKER	Jeff is male										
-13	LEOLANI	Let me ask you something. Has jeff ever be husband of a agent?	Let me ask you something. Has jeff ever been a husband?	3	3	2	3	3	2	2	2	2
-14	SPEAKER	No										
-15	LEOLANI	What are you trying to say? I am just a humble AI, please try again.	Ok, good to know.	2	2	2	2	1	2	2	2	2
-16	SPEAKER	Jeff is 28										
-17	LEOLANI	Ok, interesting but too much for me. What else?	Ok, good to know.	2	2	2	2	1	2	2	2	2
-18	LEOLANI	Goodbye Jeff! See you soon.										
+Turn,Speaker,Response,Reference Response,Overall Human Rating,Interesting,Engaging,Specific,Relevant,Correct,Semantically Appropriate,Understandable,Fluent
+0,LEOLANI,Hi my name is Leolani and I am happy to talk to you! What is your name please only give me your name?,,,,,,,,,,
+1,LEOLANI,Hi Jeff! Please tell me something about yourself.,,,,,,,,,,
+2,SPEAKER,I am a chef,,,,,,,,,,
+3,LEOLANI,I know. I have heard about i before,I know. I have heard this about you before,3,3,2,2,3,2,2,2,2
+4,SPEAKER,Tell me about you,,,,,,,,,,
+5,LEOLANI,someone told me I  jeff and that I know you,Someone told me you are Jeff and that I know you.,2,2,2,3,3,2,2,2,2
+6,SPEAKER,Jeff is from Chicago,,,,,,,,,,
+7,LEOLANI,I am curious. Has a agent ever manufacture in chicago?,Has Jeff ever been manufacturing in Chicago?,2,2,2,2,1,2,2,2,2
+8,SPEAKER,Jeff is the son of Angus,,,,,,,,,,
+9,LEOLANI,I am out of words.,Ok good to know.,2,1,1,1,1,3,3,3,3
+10,SPEAKER,Tell me about Angus,,,,,,,,,,
+11,LEOLANI,I don't know,I don’t know Angus.,3,3,2,2,3,2,2,2,2
+12,SPEAKER,Jeff is male,,,,,,,,,,
+13,LEOLANI,Let me ask you something. Has jeff ever be husband of a agent?,Let me ask you something. Has jeff ever been a husband?,3,3,2,3,3,2,2,2,2
+14,SPEAKER,No,,,,,,,,,,
+15,LEOLANI,What are you trying to say? I am just a humble AI please try again.,Ok good to know.,2,2,2,2,1,2,2,2,2
+16,SPEAKER,Jeff is 28,,,,,,,,,,
+17,LEOLANI,Ok interesting but too much for me. What else?,Ok good to know.,2,2,2,2,1,2,2,2,2
+18,LEOLANI,Goodbye Jeff! See you soon.,,,,,,,,,,

@@ -1,61 +1,61 @@
-Turn	Speaker	Response	Reference Response	Overall Human Rating	Interesting	Engaging	Specific	Relevant	Correct	Semantically Appropriate	Understandable	Fluent
-0	LEOLANI	Hi, my name is Leolani and I am happy to talk to you! What is your name, please only give me your name?										
-1	LEOLANI	Hi Brian! Please, tell me something about yourself.										
-2	SPEAKER	I am from Dublin										
-3	LEOLANI	Odd! bob told me in 2023 11 21 that i be from london, but now you tell me that i be from dublin	Odd! bob told me in 2023 11 21 that i be from london, but now you tell me that you bare from dublin.	3	3	3	4	4	3	3	4	4
-4	SPEAKER	I like trams										
-5	LEOLANI	I like it! Now I know 7 items that i like, like pizza and jazz music	I like it! Now I know 7 items that you like, like pizza and jazz music.	3	3	3	4	4	3	3	4	4
-6	SPEAKER	what do you know about me										
-7	LEOLANI	someone told me I know you	someone told me I know you	3	3	3	4	4	3	3	4	4
-8	SPEAKER	who										
-9	LEOLANI	Sorry, I did not get that.	<Name> has.	2	1	1	2	2	2	2	3	3
-10	SPEAKER	I am a builder										
-11	LEOLANI	If you don't mind me asking. Has i ever be son of a agent?	If you don't mind me asking. Are you a son of <Name>?	3	3	3	4	4	3	3	4	4
-12	SPEAKER	no I am Brian										
-13	LEOLANI	Wow! Now I know 3 items that no i be, like the husband of bram and a grandparent of	Wow! Now I know 3 things about you, <3 things>.	2	1	1	2	2	2	2	3	3
-14	SPEAKER	who is Brian										
-15	LEOLANI	someone told me you  brian	someone told me you are Brian	3	3	3	4	4	3	3	4	4
-16	SPEAKER	yes										
-17	LEOLANI	I see. Cannot make much of what you said.	I see.	3	3	3	4	4	3	3	4	4
-18	SPEAKER	no										
-19	LEOLANI	Ok, interesting but too much for me. What else?	no what?	3	3	3	4	4	3	3	4	4
-20	SPEAKER	I like to make stuff										
-21	LEOLANI	I am out of words.	What kind of stuff do you like to make?	3	3	3	4	4	3	3	4	4
-22	SPEAKER	hey										
-23	LEOLANI	Ok, interesting but too much for me. What else?	hey	2	1	1	2	2	2	2	3	3
-24	SPEAKER	Brian is a builder										
-25	LEOLANI	Amazing! Did you know that i also be a builder	Amazing! Did you know that <name> also is a builder?	3	3	3	4	4	3	3	4	4
-26	SPEAKER	Brian is 42										
-27	LEOLANI	Ok, interesting but too much for me. What else?	I see.	3	3	3	4	4	3	3	4	4
-28	SPEAKER	Brian is single										
-29	SPEAKER	what do you know about Brian										
-30	LEOLANI	someone told me you  brian and you told me you is a builder 	someone told me you are Brian and that you are a builder.	3	3	3	4	4	3	3	4	4
-31	SPEAKER	yes										
-32	LEOLANI	I hear you but it does not make sense to me.	I see.	3	3	3	4	4	3	3	4	4
-33	SPEAKER	fair										
-34	LEOLANI	I hear you but it does not make sense to me.	I see.	3	3	3	4	4	3	3	4	4
-35	SPEAKER	I think 3D printing is interesting										
-36	LEOLANI	That rings a bell. I have heard about i before	That rings a bell. I have heard about i before	4	4	4	4	4	4	4	4	4
-37	SPEAKER	Brian likes 3D printing										
-38	LEOLANI	I would like to know. Has 3d printing study at by a institution?	I would like to know. Did you study 3d printing at an institution?	3	3	3	4	4	3	3	4	4
-39	SPEAKER	no										
-40	LEOLANI	I see. Cannot make much of what you said.	I see.	3	3	3	4	4	3	3	4	4
-41	SPEAKER	Brian is afraid of snakes										
-42	LEOLANI	I like it! Did you know that brian also be a builder	I like it! Did you know that brian also is a builder	4	4	4	4	4	4	4	4	4
-43	SPEAKER	yes										
-44	LEOLANI	What are you trying to say? I am just a humble AI, please try again.	I see.	3	3	3	4	4	3	3	4	4
-45	SPEAKER	Brian is 42										
-46	LEOLANI	I hear you but it does not make sense to me.	I see.	3	3	3	4	4	3	3	4	4
-47	SPEAKER	Brian likes dogs										
-48	LEOLANI	That makes my day! Did you know that brian also like 3d printing	That makes my day! Did you know that brian also likes 3d printing	4	4	4	4	4	4	4	4	4
-49	SPEAKER	Brian is tall										
-50	LEOLANI	Wow! Now I know 2 items that brian be, like a builder and afraid of snakes	Wow! Now I know 2 things about Brian, that he is a builder and afraid of snakes.	3	3	3	4	4	3	3	4	4
-51	SPEAKER	Brian likes drinking										
-52	LEOLANI	Cool! Now I know 2 items that brian like, like 3d printing and dogs	Cool! Now I know 2 things that brian likea, like 3d printing and dogs.	4	4	4	4	4	4	4	4	4
-53	SPEAKER	what do you know about Angus										
-54	LEOLANI	someone told me I know angus and Carla|Carla told me carla|Carla know angus and that I hear angus and that I trust angus and Fredrique|Fredrique told me fredrique|Fredrique know angus and that agent know angus and that fredrique|Fredrique work with angus										
-55	SPEAKER	Brian thinks Angus stinks										
-56	LEOLANI	I am curious. Has a person ever be family of angus stinks?										
-57	SPEAKER	Brian doesn't like angus										
-58	LEOLANI	That makes my day! Now I know 3 items that brian like, like drinking and 3d printing										
-59	LEOLANI	Goodbye Brian! See you soon.										
+Turn,Speaker,Response,Reference Response,Overall Human Rating,Interesting,Engaging,Specific,Relevant,Correct,Semantically Appropriate,Understandable,Fluent
+0,LEOLANI,Hi my name is Leolani and I am happy to talk to you! What is your name please only give me your name?,,,,,,,,,,
+1,LEOLANI,Hi Brian! Please tell me something about yourself.,,,,,,,,,,
+2,SPEAKER,I am from Dublin,,,,,,,,,,
+3,LEOLANI,Odd! bob told me in 2023 11 21 that i be from london but now you tell me that i be from dublin,Odd! bob told me in 2023 11 21 that i be from london but now you tell me that you bare from dublin.,3,3,3,4,4,3,3,4,4
+4,SPEAKER,I like trams,,,,,,,,,,
+5,LEOLANI,I like it! Now I know 7 items that i like like pizza and jazz music,I like it! Now I know 7 items that you like like pizza and jazz music.,3,3,3,4,4,3,3,4,4
+6,SPEAKER,what do you know about me,,,,,,,,,,
+7,LEOLANI,someone told me I know you,someone told me I know you,3,3,3,4,4,3,3,4,4
+8,SPEAKER,who,,,,,,,,,,
+9,LEOLANI,Sorry I did not get that.,<Name> has.,2,1,1,2,2,2,2,3,3
+10,SPEAKER,I am a builder,,,,,,,,,,
+11,LEOLANI,If you don't mind me asking. Has i ever be son of a agent?,If you don't mind me asking. Are you a son of <Name>?,3,3,3,4,4,3,3,4,4
+12,SPEAKER,no I am Brian,,,,,,,,,,
+13,LEOLANI,Wow! Now I know 3 items that no i be like the husband of bram and a grandparent of,Wow! Now I know 3 things about you <3 things>.,2,1,1,2,2,2,2,3,3
+14,SPEAKER,who is Brian,,,,,,,,,,
+15,LEOLANI,someone told me you  brian,someone told me you are Brian,3,3,3,4,4,3,3,4,4
+16,SPEAKER,yes,,,,,,,,,,
+17,LEOLANI,I see. Cannot make much of what you said.,I see.,3,3,3,4,4,3,3,4,4
+18,SPEAKER,no,,,,,,,,,,
+19,LEOLANI,Ok interesting but too much for me. What else?,no what?,3,3,3,4,4,3,3,4,4
+20,SPEAKER,I like to make stuff,,,,,,,,,,
+21,LEOLANI,I am out of words.,What kind of stuff do you like to make?,3,3,3,4,4,3,3,4,4
+22,SPEAKER,hey,,,,,,,,,,
+23,LEOLANI,Ok interesting but too much for me. What else?,hey,2,1,1,2,2,2,2,3,3
+24,SPEAKER,Brian is a builder,,,,,,,,,,
+25,LEOLANI,Amazing! Did you know that i also be a builder,Amazing! Did you know that <name> also is a builder?,3,3,3,4,4,3,3,4,4
+26,SPEAKER,Brian is 42,,,,,,,,,,
+27,LEOLANI,Ok interesting but too much for me. What else?,I see.,3,3,3,4,4,3,3,4,4
+28,SPEAKER,Brian is single,,,,,,,,,,
+29,SPEAKER,what do you know about Brian,,,,,,,,,,
+30,LEOLANI,someone told me you  brian and you told me you is a builder ,someone told me you are Brian and that you are a builder.,3,3,3,4,4,3,3,4,4
+31,SPEAKER,yes,,,,,,,,,,
+32,LEOLANI,I hear you but it does not make sense to me.,I see.,3,3,3,4,4,3,3,4,4
+33,SPEAKER,fair,,,,,,,,,,
+34,LEOLANI,I hear you but it does not make sense to me.,I see.,3,3,3,4,4,3,3,4,4
+35,SPEAKER,I think 3D printing is interesting,,,,,,,,,,
+36,LEOLANI,That rings a bell. I have heard about i before,That rings a bell. I have heard about i before,4,4,4,4,4,4,4,4,4
+37,SPEAKER,Brian likes 3D printing,,,,,,,,,,
+38,LEOLANI,I would like to know. Has 3d printing study at by a institution?,I would like to know. Did you study 3d printing at an institution?,3,3,3,4,4,3,3,4,4
+39,SPEAKER,no,,,,,,,,,,
+40,LEOLANI,I see. Cannot make much of what you said.,I see.,3,3,3,4,4,3,3,4,4
+41,SPEAKER,Brian is afraid of snakes,,,,,,,,,,
+42,LEOLANI,I like it! Did you know that brian also be a builder,I like it! Did you know that brian also is a builder,4,4,4,4,4,4,4,4,4
+43,SPEAKER,yes,,,,,,,,,,
+44,LEOLANI,What are you trying to say? I am just a humble AI please try again.,I see.,3,3,3,4,4,3,3,4,4
+45,SPEAKER,Brian is 42,,,,,,,,,,
+46,LEOLANI,I hear you but it does not make sense to me.,I see.,3,3,3,4,4,3,3,4,4
+47,SPEAKER,Brian likes dogs,,,,,,,,,,
+48,LEOLANI,That makes my day! Did you know that brian also like 3d printing,That makes my day! Did you know that brian also likes 3d printing,4,4,4,4,4,4,4,4,4
+49,SPEAKER,Brian is tall,,,,,,,,,,
+50,LEOLANI,Wow! Now I know 2 items that brian be like a builder and afraid of snakes,Wow! Now I know 2 things about Brian that he is a builder and afraid of snakes.,3,3,3,4,4,3,3,4,4
+51,SPEAKER,Brian likes drinking,,,,,,,,,,
+52,LEOLANI,Cool! Now I know 2 items that brian like like 3d printing and dogs,Cool! Now I know 2 things that brian likea like 3d printing and dogs.,4,4,4,4,4,4,4,4,4
+53,SPEAKER,what do you know about Angus,,,,,,,,,,
+54,LEOLANI,someone told me I know angus and Carla|Carla told me carla|Carla know angus and that I hear angus and that I trust angus and Fredrique|Fredrique told me fredrique|Fredrique know angus and that agent know angus and that fredrique|Fredrique work with angus,,,,,,,,,,
+55,SPEAKER,Brian thinks Angus stinks,,,,,,,,,,
+56,LEOLANI,I am curious. Has a person ever be family of angus stinks?,,,,,,,,,,
+57,SPEAKER,Brian doesn't like angus,,,,,,,,,,
+58,LEOLANI,That makes my day! Now I know 3 items that brian like like drinking and 3d printing,,,,,,,,,,
+59,LEOLANI,Goodbye Brian! See you soon.,,,,,,,,,,
