@@ -43,7 +43,6 @@ def numpy_to_base64(image_array, image_format="PNG"):
 
 def setup(env="colab"):
     from dotenv import load_dotenv
-    from ai2thor.controller import Controller
 
     if env == "colab":
         os.system("pip install --upgrade ai2thor --quiet")
@@ -528,26 +527,29 @@ def find_object_and_confirm(
                 if position in searched_positions:
                     continue  # Skip if we've already checked this object
 
+                # FAR
                 # Teleport in front of the object
-                event = teleport_in_front_of_object(
-                    controller, position, reachable_positions, visited_positions
+                event_far = teleport_in_front_of_object(
+                    controller,
+                    position,
+                    reachable_positions,
+                    visited_positions,
+                    distance=2.0,
                 )
 
-                # Get the current frame after teleporting
-                # frame = controller.last_event.frame
-                base64_string = numpy_to_base64(event.frame)
-                Image.fromarray(event.frame)  # image for clearity
+                base64_string_far = numpy_to_base64(event_far.frame)
+                Image.fromarray(event_far.frame)  # image for clearity
 
                 # Analyze the image using the OpenAI API
-                description = analyze_image(
-                    base64_string,
+                description_far = analyze_image(
+                    base64_string_far,
                     api_key=api_key,
-                    prompt=f"Describe the {matched_object} in great detail.",
+                    prompt=f"Describe in detail the objects that {matched_object} is sourrounded by with spatial relations.",
                 )
-                utterance = description[0]["choices"][0]["message"]["content"]
+                utterance = description_far[0]["choices"][0]["message"]["content"]
 
                 # Communicate with the user
-                agent_message = f"{utterance} Was this the item you were looking for?"
+                agent_message = f"{utterance} Should I get a closer look at the object sorrounded by these objects?"
                 print(f"{AGENT}>{agent_message}")
                 leolaniClient._add_utterance(AGENT, agent_message)
 
@@ -558,20 +560,68 @@ def find_object_and_confirm(
                 leolaniClient._add_utterance(HUMAN, user_input)
                 print(f"{HUMAN}>{user_input}")
 
-                if user_input == "yes":
-                    print(f"{AGENT}>Great! I've found the {matched_object}.")
-                    leolaniClient._add_utterance(
-                        AGENT, f"Great! I've found the {matched_object}."
-                    )
-                    return True
-                elif user_input == "no":
+                if user_input == "no":
                     searched_positions.append(position)
                     continue
-                else:
-                    # Handle unexpected input
-                    error_message = "Please respond with 'yes' or 'no'."
-                    print(f"{AGENT}>{error_message}")
-                    leolaniClient._add_utterance(AGENT, error_message)
+
+                if user_input == "yes":
+                    print(
+                        f"{AGENT}>Great! Let me have a coser look at the {matched_object}."
+                    )
+                    leolaniClient._add_utterance(
+                        AGENT,
+                        f"Great! Let me have a coser look at the {matched_object}.",
+                    )
+                    # return True
+
+                    # -----------------------------------------------------------------------------------------------
+
+                    # NORMAL
+                    # Teleport in front of the object
+                    event = teleport_in_front_of_object(
+                        controller, position, reachable_positions, visited_positions
+                    )
+
+                    base64_string = numpy_to_base64(event.frame)
+                    Image.fromarray(event.frame)  # image for clearity
+
+                    # Analyze the image using the OpenAI API
+                    description = analyze_image(
+                        base64_string,
+                        api_key=api_key,
+                        prompt=f"Describe the {matched_object} in great detail.",
+                    )
+                    utterance = description[0]["choices"][0]["message"]["content"]
+
+                    # Communicate with the user
+                    agent_message = (
+                        f"{utterance} Was this the item you were looking for?"
+                    )
+                    print(f"{AGENT}>{agent_message}")
+                    leolaniClient._add_utterance(AGENT, agent_message)
+
+                    # Get user input
+                    user_input = (
+                        input("Type 'yes' if so, or 'no' to continue: ").strip().lower()
+                    )
+                    leolaniClient._add_utterance(HUMAN, user_input)
+                    print(f"{HUMAN}>{user_input}")
+
+                    if user_input == "yes":
+                        print(f"{AGENT}>Great! I've found the {matched_object}.")
+                        leolaniClient._add_utterance(
+                            AGENT, f"Great! I've found the {matched_object}."
+                        )
+                        return True
+
+                    elif user_input == "no":
+                        searched_positions.append(position)
+                        continue
+                    else:
+                        # Handle unexpected input
+                        error_message = "Please respond with 'yes' or 'no'."
+                        print(f"{AGENT}>{error_message}")
+                        leolaniClient._add_utterance(AGENT, error_message)
 
             # After checking all objects in current location, move to a new location
             if len(visited_positions) == len(reachable_positions):

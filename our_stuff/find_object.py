@@ -11,6 +11,7 @@ from utils import (
     random_teleport,
     find_object_and_confirm,
 )
+from ai2thor.controller import Controller
 
 
 def main(env="colab"):
@@ -26,7 +27,14 @@ def main(env="colab"):
     HUMAN = input("Type the human name...")
     leolaniClient = init_chat_client(AGENT, HUMAN)
 
-    add_utterance(AGENT, f"Hi {HUMAN}. What do you see in the room?", leolaniClient)
+    add_utterance(
+        AGENT,
+        f"""Hi {HUMAN}. What do you see in the room? Try to
+                  describe the spatial relationships between objects. In th
+                  foreground I see a table with 5 chairs around it. and in the
+                  background there is a window on a wall in the corener.""",
+        leolaniClient,
+    )
 
     human_room_description = input("Type the room description...")
     # human_room_description = (
