@@ -3,7 +3,6 @@ import numpy as np
 from PIL import Image
 import base64
 import io
-from ai2thor.controller import Controller
 import copy
 import os
 import random
@@ -44,6 +43,7 @@ def numpy_to_base64(image_array, image_format="PNG"):
 
 def setup(env="colab"):
     from dotenv import load_dotenv
+    from ai2thor.controller import Controller
 
     if env == "colab":
         os.system("pip install --upgrade ai2thor --quiet")

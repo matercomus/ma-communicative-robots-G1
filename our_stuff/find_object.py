@@ -11,7 +11,6 @@ from utils import (
     random_teleport,
     find_object_and_confirm,
 )
-from ai2thor.controller import Controller
 
 
 def main(env="colab"):
