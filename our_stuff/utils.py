@@ -390,12 +390,21 @@ def find_object_and_confirm(
                 msg = f"I have searched all locations but couldn't find any {matched_object}."
                 leolaniClient._add_utterance(AGENT, msg)
                 print(f"{AGENT}>{msg}")
-                leolaniClient._add_utterance(
-                    AGENT,
-                    "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                options_msg = (
+                    "Please choose one of the following options:\n"
+                    "- Type 'retry' to search again.\n"
+                    "- Type 'change' to pick another object.\n"
+                    "- Type 'bye' to stop the search."
                 )
+                leolaniClient._add_utterance(AGENT, options_msg)
+                print(f"{AGENT}>{options_msg}")
                 user_decision = user_input_with_bye(
-                    "", leolaniClient, HUMAN, AGENT, scenario_saver
+                    "",
+                    leolaniClient,
+                    HUMAN,
+                    AGENT,
+                    scenario_saver,
+                    valid_options=["retry", "change"],
                 )
                 if user_decision == "retry":
                     visited_positions.clear()
@@ -431,12 +440,21 @@ def find_object_and_confirm(
                 msg = f"I have searched all locations but couldn't find any {matched_object}."
                 leolaniClient._add_utterance(AGENT, msg)
                 print(f"{AGENT}>{msg}")
-                leolaniClient._add_utterance(
-                    AGENT,
-                    "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                options_msg = (
+                    "Please choose one of the following options:\n"
+                    "- Type 'retry' to search again.\n"
+                    "- Type 'change' to pick another object.\n"
+                    "- Type 'bye' to stop the search."
                 )
+                leolaniClient._add_utterance(AGENT, options_msg)
+                print(f"{AGENT}>{options_msg}")
                 user_decision = user_input_with_bye(
-                    "", leolaniClient, HUMAN, AGENT, scenario_saver
+                    "",
+                    leolaniClient,
+                    HUMAN,
+                    AGENT,
+                    scenario_saver,
+                    valid_options=["retry", "change"],
                 )
                 if user_decision == "retry":
                     visited_positions.clear()
@@ -475,12 +493,21 @@ def find_object_and_confirm(
                     msg = f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
                     leolaniClient._add_utterance(AGENT, msg)
                     print(f"{AGENT}>{msg}")
-                    leolaniClient._add_utterance(
-                        AGENT,
-                        "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                    options_msg = (
+                        "Please choose one of the following options:\n"
+                        "- Type 'retry' to search again.\n"
+                        "- Type 'change' to pick another object.\n"
+                        "- Type 'bye' to stop the search."
                     )
+                    leolaniClient._add_utterance(AGENT, options_msg)
+                    print(f"{AGENT}>{options_msg}")
                     user_decision = user_input_with_bye(
-                        "", leolaniClient, HUMAN, AGENT, scenario_saver
+                        "",
+                        leolaniClient,
+                        HUMAN,
+                        AGENT,
+                        scenario_saver,
+                        valid_options=["retry", "change"],
                     )
                     if user_decision == "retry":
                         visited_positions.clear()
