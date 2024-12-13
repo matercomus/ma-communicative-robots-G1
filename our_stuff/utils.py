@@ -709,12 +709,13 @@ def find_object_and_confirm(
                                 ]
 
                                 if objects_of_interest:
-                                    for key, value in objects_of_interest[0].items():
-                                        print(f"{key}: {value}")
-                                    else:
-                                        print(
-                                            f"No metadata of the desired object {matched_object} found."
-                                        )
+                                    print(
+                                        f"ObjectID of the desired object: {objects_of_interest[0]['objectId']}"
+                                    )
+                                else:
+                                    print(
+                                        f"No metadata of the desired object {matched_object} found."
+                                    )
 
                                 return True
                             elif user_input == "no":
