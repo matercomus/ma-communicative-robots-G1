@@ -1,0 +1,46 @@
+{
+  "@context": {
+    "Scenario": "https://emissor.org#Scenario",
+    "id": "@id",
+    "context": "https://emissor.org#context",
+    "signals": "https://emissor.org#signals",
+    "ruler": "https://emissor.org#ruler"
+  },
+  "@type": "Scenario",
+  "id": "7733fb21-cb15-4520-b6ae-5510681aa62c",
+  "ruler": {
+    "@context": {
+      "TemporalRuler": "https://emissor.org#TemporalRuler",
+      "id": "@id",
+      "start": "https://emissor.org#start",
+      "end": "https://emissor.org#end",
+      "container_id": {
+        "@id": "https://emissor.org#container_id",
+        "@type": "@id"
+      }
+    },
+    "@type": "TemporalRuler",
+    "container_id": "7733fb21-cb15-4520-b6ae-5510681aa62c",
+    "start": 1734079857552,
+    "end": 1734080119029,
+    "_py_type": "emissor.representation.container-TemporalRuler"
+  },
+  "context": {
+    "@context": {
+      "ScenarioContext": "https://emissor.org#ScenarioContext",
+      "id": "@id",
+      "agent": "https://emissor.org#agent"
+    },
+    "@type": "ScenarioContext",
+    "agent": "test_robot",
+    "speaker": {
+      "name": "divyansh",
+      "uri": "http://cltl.nl/leolani/world/divyansh"
+    },
+    "_py_type": "leolani_client-ApplicationContext"
+  },
+  "signals": {
+    "text": "./text.json",
+    "image": "./image.json"
+  }
+}

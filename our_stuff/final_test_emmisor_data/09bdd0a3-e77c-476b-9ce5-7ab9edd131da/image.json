@@ -1,0 +1,1092 @@
+[
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "57365446-4900-416a-bd5d-d7095d439e91",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "57365446-4900-416a-bd5d-d7095d439e91",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078716850,
+      "end": 1734078716850
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/scene_view.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "8c640844-b6a8-406b-aba3-808e362d7808",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "57365446-4900-416a-bd5d-d7095d439e91",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "scene",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078716,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "04eab7fc-537b-4857-a06e-8ef9d1c319f6",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "04eab7fc-537b-4857-a06e-8ef9d1c319f6",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078717182,
+      "end": 1734078717182
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/scene_view.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "666f5f80-b8a5-4eb7-82d6-0edf3cbc2360",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "04eab7fc-537b-4857-a06e-8ef9d1c319f6",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "scene",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078717,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "98fbfa90-4723-49b3-81e8-70f1fc2b38e2",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "98fbfa90-4723-49b3-81e8-70f1fc2b38e2",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078717473,
+      "end": 1734078717473
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/scene_view.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "14a3afc9-1a0c-4a3e-b5a9-228a386eb4d4",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "98fbfa90-4723-49b3-81e8-70f1fc2b38e2",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "scene",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078717,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "a4601fc5-8d1d-43c8-86d1-6c44fe0a84b0",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "a4601fc5-8d1d-43c8-86d1-6c44fe0a84b0",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078717556,
+      "end": 1734078717556
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/scene_view.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "18507238-41b9-40ee-bfb1-ec3f5b220b08",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "a4601fc5-8d1d-43c8-86d1-6c44fe0a84b0",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "scene",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078717,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "fc2c4518-64d2-49b8-be9d-5e93053cb09f",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "fc2c4518-64d2-49b8-be9d-5e93053cb09f",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078717570,
+      "end": 1734078717570
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/Laptop_far_analysis.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "b9446d79-29bc-4ee1-ba87-31a174947e38",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "fc2c4518-64d2-49b8-be9d-5e93053cb09f",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "Laptop",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078717,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "41d036f4-3b79-48ef-8a5b-3fdad5e0a28f",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "41d036f4-3b79-48ef-8a5b-3fdad5e0a28f",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078721806,
+      "end": 1734078721806
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/Laptop_far_analyzed.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "9889f5a0-34c3-44a2-8741-92690a1ebe4f",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "41d036f4-3b79-48ef-8a5b-3fdad5e0a28f",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "Laptop",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078721,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "a76b1a5f-9058-49b5-8f90-b1fb884d6ca2",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "a76b1a5f-9058-49b5-8f90-b1fb884d6ca2",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078725769,
+      "end": 1734078725769
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/scene_view.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "2a69856c-9f8e-49bd-8ffd-dea0aff441b1",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "a76b1a5f-9058-49b5-8f90-b1fb884d6ca2",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "scene",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078725,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "1f022359-07b8-4a17-87b8-375a8704b6a5",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "1f022359-07b8-4a17-87b8-375a8704b6a5",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078725843,
+      "end": 1734078725843
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/scene_view.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "7e5d96a6-74e0-40c2-b631-a4a2c55c24f6",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "1f022359-07b8-4a17-87b8-375a8704b6a5",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "scene",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078725,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "76e9e6bc-85f1-43b1-a8e7-d05bdeadfb61",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "76e9e6bc-85f1-43b1-a8e7-d05bdeadfb61",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078725857,
+      "end": 1734078725857
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/Laptop_close_analysis.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "48037461-b6b3-45fd-b43a-a21430d896f9",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "76e9e6bc-85f1-43b1-a8e7-d05bdeadfb61",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "Laptop",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078725,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@context": {
+      "ImageSignal": "https://emissor.org#ImageSignal",
+      "id": "@id",
+      "modality": "https://emissor.org#modality",
+      "time": "https://emissor.org#time",
+      "files": "https://emissor.org#files",
+      "mentions": "https://emissor.org#mentions",
+      "array": "https://emissor.org#array",
+      "ruler": "https://emissor.org#ruler"
+    },
+    "@type": "ImageSignal",
+    "id": "050fc764-7a4e-4a0e-9c33-10ffc0b52d3b",
+    "ruler": {
+      "@context": {
+        "MultiIndex": "https://emissor.org#MultiIndex",
+        "id": "@id",
+        "bounds": "https://emissor.org#bounds",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "MultiIndex",
+      "container_id": "050fc764-7a4e-4a0e-9c33-10ffc0b52d3b",
+      "bounds": [
+        0,
+        0,
+        640,
+        480
+      ],
+      "_py_type": "emissor.representation.container-MultiIndex"
+    },
+    "array": "",
+    "modality": "IMAGE",
+    "time": {
+      "@context": {
+        "TemporalRuler": "https://emissor.org#TemporalRuler",
+        "id": "@id",
+        "start": "https://emissor.org#start",
+        "end": "https://emissor.org#end",
+        "container_id": {
+          "@id": "https://emissor.org#container_id",
+          "@type": "@id"
+        }
+      },
+      "@type": "TemporalRuler",
+      "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+      "start": 1734078728998,
+      "end": 1734078728998
+    },
+    "files": [
+      "./emissor/09bdd0a3-e77c-476b-9ce5-7ab9edd131da/image/Laptop_close_analyzed.jpg"
+    ],
+    "mentions": [
+      {
+        "@context": {
+          "Mention": "https://emissor.org#Mention",
+          "id": "@id",
+          "segment": "https://emissor.org#segment",
+          "annotations": "https://emissor.org#annotations"
+        },
+        "@type": "Mention",
+        "id": "4ac32171-00b8-45b5-8f75-619131937fc8",
+        "segment": [
+          {
+            "@context": {
+              "MultiIndex": "https://emissor.org#MultiIndex",
+              "id": "@id",
+              "bounds": "https://emissor.org#bounds",
+              "container_id": {
+                "@id": "https://emissor.org#container_id",
+                "@type": "@id"
+              }
+            },
+            "@type": "MultiIndex",
+            "container_id": "050fc764-7a4e-4a0e-9c33-10ffc0b52d3b",
+            "bounds": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "_py_type": "emissor.representation.container-MultiIndex"
+          }
+        ],
+        "annotations": [
+          {
+            "@context": {
+              "Annotation": "https://emissor.org#Annotation",
+              "id": "@id",
+              "type": "https://emissor.org#type",
+              "value": "https://emissor.org#value",
+              "source": "https://emissor.org#source",
+              "timestamp": "https://emissor.org#timestamp"
+            },
+            "@type": "Annotation",
+            "type": "Laptop",
+            "value": {
+              "_py_type": "builtins-dict"
+            },
+            "source": "Ai2Thor",
+            "timestamp": 1734078728,
+            "_py_type": "emissor.representation.scenario-Annotation"
+          }
+        ]
+      }
+    ]
+  }
+]

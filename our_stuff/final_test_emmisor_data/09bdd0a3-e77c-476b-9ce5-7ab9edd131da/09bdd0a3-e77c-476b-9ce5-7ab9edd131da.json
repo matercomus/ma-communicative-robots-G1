@@ -1,0 +1,46 @@
+{
+  "@context": {
+    "Scenario": "https://emissor.org#Scenario",
+    "id": "@id",
+    "context": "https://emissor.org#context",
+    "signals": "https://emissor.org#signals",
+    "ruler": "https://emissor.org#ruler"
+  },
+  "@type": "Scenario",
+  "id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+  "ruler": {
+    "@context": {
+      "TemporalRuler": "https://emissor.org#TemporalRuler",
+      "id": "@id",
+      "start": "https://emissor.org#start",
+      "end": "https://emissor.org#end",
+      "container_id": {
+        "@id": "https://emissor.org#container_id",
+        "@type": "@id"
+      }
+    },
+    "@type": "TemporalRuler",
+    "container_id": "09bdd0a3-e77c-476b-9ce5-7ab9edd131da",
+    "start": 1734078701695,
+    "end": 1734078731251,
+    "_py_type": "emissor.representation.container-TemporalRuler"
+  },
+  "context": {
+    "@context": {
+      "ScenarioContext": "https://emissor.org#ScenarioContext",
+      "id": "@id",
+      "agent": "https://emissor.org#agent"
+    },
+    "@type": "ScenarioContext",
+    "agent": "robot",
+    "speaker": {
+      "name": "me",
+      "uri": "http://cltl.nl/leolani/world/me"
+    },
+    "_py_type": "leolani_client-ApplicationContext"
+  },
+  "signals": {
+    "text": "./text.json",
+    "image": "./image.json"
+  }
+}
