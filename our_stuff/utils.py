@@ -13,6 +13,7 @@ import math
 
 import re
 
+
 def load_unique_object_list(csv_file_path):
     with open(csv_file_path, mode="r") as file:
         csv_reader = csv.reader(file)
@@ -60,12 +61,11 @@ def setup(env="colab"):
         api_key = os.getenv("OPENAI_API_KEY")
 
     else:
-        os.system("pip install --upgrade ai2thor --quiet")
-        os.system("pip install ai2thor-colab prior --upgrade &> /dev/null")
-        os.system("pip install python-dotenv")
-        os.system("pip install cltl.combot --break-system-packages")
-
-        os.system("apt-get install xvfb")
+        # os.system("pip install --upgrade ai2thor --quiet")
+        # os.system("pip install ai2thor-colab prior --upgrade &> /dev/null")
+        # os.system("pip install python-dotenv")
+        # os.system("pip install cltl.combot --break-system-packages")
+        # os.system("apt-get install xvfb")
         import ai2thor_colab
 
         ai2thor_colab.start_xserver()
@@ -198,8 +198,6 @@ def get_object_positions(controller, matched_object):
         # print(obj["name"], obj["position"])
         object_positions.append(obj["position"])
     return object_positions
-
-
 
 
 def interactive_object_match(
