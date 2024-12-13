@@ -8,7 +8,6 @@ import copy
 import os
 import random
 import csv
-import matplotlib.pyplot as plt
 import math
 import re
 from enum import Enum, auto
@@ -44,6 +43,9 @@ def load_unique_object_list(csv_file_path):
 
 
 def numpy_to_base64(image_array, image_format="PNG"):
+    """
+    Convert a numpy array to a Base64-encoded string.
+    """
     image_array = np.ascontiguousarray(image_array)
     buffer = io.BytesIO()
     Image.fromarray(image_array).save(buffer, format=image_format)
@@ -86,6 +88,9 @@ def record_action_and_image(
 
 
 def step_and_record(controller, leolaniClient, action_name, **kwargs):
+    """
+    Execute controller.step(...) and record the action and resulting image.
+    """
     event = controller.step(action=action_name.name, **kwargs)
     record_action_and_image(leolaniClient, action_name, event)
     return event
@@ -150,7 +155,9 @@ def get_object_positions(controller, matched_object):
         obj for obj in controller.last_event.metadata["objects"] if obj["visible"]
     ]
     objects_of_interest = [
-        obj for obj in visible_objects if obj["objectType"] == matched_object
+        obj
+        for obj in visible_objects
+        if obj["objectType"].lower() == matched_object.lower()
     ]
     object_positions = [obj["position"] for obj in objects_of_interest]
     return object_positions
@@ -184,6 +191,7 @@ def user_input_with_bye(prompt, leolaniClient, HUMAN, AGENT, scenario_saver):
 
 
 def add_image_from_event(leolaniClient, event, object_name, object_type):
+    """Add image from event frame."""
     img_pil = Image.fromarray(event.frame)
     dummy_bounds = {"x": 0, "y": 0, "z": 0}
     leolaniClient._add_image(object_name, object_type, dummy_bounds, img_pil)
@@ -200,9 +208,10 @@ def interactive_object_match(
     def ask_llm(description: str, objects: list) -> str:
         object_list_str = ", ".join(objects)
         prompt = (
-            f"Imagine you are tasked with identifying an object from a given list based on its description. "
-            f"The list of objects is: {object_list_str}. "
-            f"Match the description:\n'{description}'"
+            f"Identify the object from the following list based on the description:\n"
+            f"Description: '{description}'\n"
+            f"List of objects: {object_list_str}\n"
+            "Respond with the exact object name from the list that best matches the description."
         )
         llm_response = analyze_prompt(api_key=api_key, prompt=prompt)
         if isinstance(llm_response, tuple):
@@ -214,8 +223,8 @@ def interactive_object_match(
             and "choices" in llm_response
             and llm_response["choices"]
         ):
-            return llm_response["choices"][0]["message"]["content"]
-        return llm_response
+            return llm_response["choices"][0]["message"]["content"].strip()
+        return llm_response.strip()
 
     current_description = human_object_description
 
@@ -223,9 +232,9 @@ def interactive_object_match(
         response = ask_llm(current_description, unique_object_list)
         leolaniClient._add_utterance(AGENT, response)
         print(f"{AGENT}>{response}")
-        matched_objects = re.findall(
-            r"\b(" + "|".join(map(re.escape, unique_object_list)) + r")\b", response
-        )
+        matched_objects = [
+            obj for obj in unique_object_list if obj.lower() in response.lower()
+        ]
 
         if matched_objects:
             if len(matched_objects) == 1:
@@ -233,8 +242,8 @@ def interactive_object_match(
                 leolaniClient._add_utterance(AGENT, confirmation_prompt)
                 print(f"{AGENT}>{confirmation_prompt}")
                 user_input = safe_input("")
-                leolaniClient._add_utterance("Human", user_input)
-                print(f"Human>{user_input}")
+                leolaniClient._add_utterance(HUMAN, user_input)
+                print(f"{HUMAN}>{user_input}")
                 if user_input.lower() == "bye":
                     return matched_objects[0]
                 if user_input.lower() == "yes":
@@ -249,8 +258,8 @@ def interactive_object_match(
                     leolaniClient._add_utterance(AGENT, refine_message)
                     print(f"{AGENT}>{refine_message}")
                     clarifying_question = safe_input("")
-                    leolaniClient._add_utterance("Human", clarifying_question)
-                    print(f"Human>{clarifying_question}")
+                    leolaniClient._add_utterance(HUMAN, clarifying_question)
+                    print(f"{HUMAN}>{clarifying_question}")
                     if clarifying_question.lower() == "bye":
                         return matched_objects[0]
                     current_description = clarifying_question
@@ -266,8 +275,8 @@ def interactive_object_match(
                 leolaniClient._add_utterance(AGENT, selection_prompt)
                 print(f"{AGENT}>{selection_prompt}")
                 user_input = safe_input("")
-                leolaniClient._add_utterance("Human", user_input)
-                print(f"Human>{user_input}")
+                leolaniClient._add_utterance(HUMAN, user_input)
+                print(f"{HUMAN}>{user_input}")
                 if user_input.lower() == "bye":
                     return matched_objects[0]
                 user_input_lower = user_input.lower()
@@ -286,18 +295,18 @@ def interactive_object_match(
                     leolaniClient._add_utterance(AGENT, refine_message)
                     print(f"{AGENT}>{refine_message}")
                     clarifying_question = safe_input("")
-                    leolaniClient._add_utterance("Human", clarifying_question)
-                    print(f"Human>{clarifying_question}")
+                    leolaniClient._add_utterance(HUMAN, clarifying_question)
+                    print(f"{HUMAN}>{clarifying_question}")
                     if clarifying_question.lower() == "bye":
                         return matched_objects[0]
                     current_description = clarifying_question
         else:
-            error_message = "No matches. Provide more details?"
+            error_message = "No matches found. Provide more details?"
             leolaniClient._add_utterance(AGENT, error_message)
             print(f"{AGENT}>{error_message}")
             clarifying_question = safe_input("")
-            leolaniClient._add_utterance("Human", clarifying_question)
-            print(f"Human>{clarifying_question}")
+            leolaniClient._add_utterance(HUMAN, clarifying_question)
+            print(f"{HUMAN}>{clarifying_question}")
             if clarifying_question.lower() == "bye":
                 return unique_object_list[0]
             current_description += " " + clarifying_question
@@ -310,7 +319,9 @@ def find_all_object_positions(controller, object_type, num_rotations=3):
             obj for obj in controller.last_event.metadata["objects"] if obj["visible"]
         ]
         objects_of_interest = [
-            obj for obj in visible_objects if obj["objectType"] == object_type
+            obj
+            for obj in visible_objects
+            if obj["objectType"].lower() == object_type.lower()
         ]
         current_object_positions = [obj["position"] for obj in objects_of_interest]
         all_object_positions.extend(current_object_positions)
@@ -339,7 +350,7 @@ def get_farthest_position(reachable_positions, visited_positions):
     farthest_position = None
     for position in reachable_positions:
         if not visited_positions:
-            # If no visited positions, just pick a random or first
+            # If no visited positions, just pick the first
             return position
         distances = [euclidean_distance_2d(position, vp) for vp in visited_positions]
         min_distance = min(distances) if distances else 0
@@ -347,6 +358,415 @@ def get_farthest_position(reachable_positions, visited_positions):
             max_min_distance = min_distance
             farthest_position = position
     return farthest_position
+
+
+def find_object_and_confirm(
+    controller,
+    matched_object,
+    reachable_positions,
+    api_key,
+    AGENT,
+    HUMAN,
+    leolaniClient,
+    visited_positions,
+    human_room_descriptions,
+    unique_object_list,
+    max_rotations=3,
+    max_teleports=25,
+):
+    def scenario_saver():
+        leolaniClient._save_scenario()
+
+    searched_positions = []
+    teleport_count = 0
+
+    while True:
+        object_positions = find_all_object_positions(
+            controller, matched_object, num_rotations=max_rotations
+        )
+
+        if not object_positions:
+            if len(visited_positions) == len(reachable_positions):
+                msg = f"I have searched all locations but couldn't find any {matched_object}."
+                leolaniClient._add_utterance(AGENT, msg)
+                print(f"{AGENT}>{msg}")
+                leolaniClient._add_utterance(
+                    AGENT,
+                    "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                )
+                user_decision = user_input_with_bye(
+                    "", leolaniClient, HUMAN, AGENT, scenario_saver
+                )
+                if user_decision == "retry":
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+                elif user_decision == "change":
+                    leolaniClient._add_utterance(
+                        AGENT, "Please describe another object:"
+                    )
+                    new_description = safe_input("")
+                    leolaniClient._add_utterance(HUMAN, new_description)
+                    matched_object = interactive_object_match(
+                        api_key=api_key,
+                        human_object_description=new_description,
+                        unique_object_list=unique_object_list,
+                        HUMAN=HUMAN,
+                        AGENT=AGENT,
+                        leolaniClient=leolaniClient,
+                    )
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+                else:
+                    # Default action: retry
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+
+            farthest_position = get_farthest_position(
+                reachable_positions, visited_positions
+            )
+            if farthest_position is None:
+                msg = f"I have searched all locations but couldn't find any {matched_object}."
+                leolaniClient._add_utterance(AGENT, msg)
+                print(f"{AGENT}>{msg}")
+                leolaniClient._add_utterance(
+                    AGENT,
+                    "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                )
+                user_decision = user_input_with_bye(
+                    "", leolaniClient, HUMAN, AGENT, scenario_saver
+                )
+                if user_decision == "retry":
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+                elif user_decision == "change":
+                    leolaniClient._add_utterance(
+                        AGENT, "Please describe another object:"
+                    )
+                    new_description = safe_input("")
+                    leolaniClient._add_utterance(HUMAN, new_description)
+                    matched_object = interactive_object_match(
+                        api_key=api_key,
+                        human_object_description=new_description,
+                        unique_object_list=unique_object_list,
+                        HUMAN=HUMAN,
+                        AGENT=AGENT,
+                        leolaniClient=leolaniClient,
+                    )
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+                else:
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+            else:
+                msg = "Teleporting to a new location to continue the search."
+                leolaniClient._add_utterance(AGENT, msg)
+                print(f"{AGENT}>{msg}")
+                teleport_to_pos(
+                    farthest_position, visited_positions, controller, leolaniClient
+                )
+                teleport_count += 1
+                if teleport_count >= max_teleports:
+                    msg = f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
+                    leolaniClient._add_utterance(AGENT, msg)
+                    print(f"{AGENT}>{msg}")
+                    leolaniClient._add_utterance(
+                        AGENT,
+                        "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                    )
+                    user_decision = user_input_with_bye(
+                        "", leolaniClient, HUMAN, AGENT, scenario_saver
+                    )
+                    if user_decision == "retry":
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+                    elif user_decision == "change":
+                        leolaniClient._add_utterance(
+                            AGENT, "Please describe another object:"
+                        )
+                        new_description = safe_input("")
+                        leolaniClient._add_utterance(HUMAN, new_description)
+                        matched_object = interactive_object_match(
+                            api_key=api_key,
+                            human_object_description=new_description,
+                            unique_object_list=unique_object_list,
+                            HUMAN=HUMAN,
+                            AGENT=AGENT,
+                            leolaniClient=leolaniClient,
+                        )
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+                    else:
+                        # Default action: retry
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+                continue
+
+        else:
+            for position in object_positions:
+                if position in searched_positions:
+                    continue
+
+                event_far = teleport_in_front_of_object(
+                    controller,
+                    position,
+                    reachable_positions,
+                    visited_positions,
+                    leolaniClient,
+                    distance=2.0,
+                )
+                add_image_from_event(
+                    leolaniClient,
+                    event_far,
+                    f"{matched_object}_far_analysis",
+                    matched_object,
+                )
+
+                base64_string_far = numpy_to_base64(event_far.frame)
+                human_room_description, human_room_description_clarified = (
+                    human_room_descriptions
+                )
+                description_far = analyze_image(
+                    base64_string_far,
+                    api_key=api_key,
+                    prompt=f"""
+                            "First, determine if the image (partly) matches the
+                            descriptions and explain your reasoning. It might
+                            be the same room but from a different point of
+                            view. Then, describe distinguishable objects around
+                            {matched_object} as bullet points.
+
+                            Human’s initial description:
+                            {human_room_description}
+
+                            Clarified details:
+                            {human_room_description_clarified}"
+                            """,
+                )
+                add_image_from_event(
+                    leolaniClient,
+                    event_far,
+                    f"{matched_object}_far_analyzed",
+                    matched_object,
+                )
+                utterance = description_far[0]["choices"][0]["message"]["content"]
+                agent_message = f"{utterance} Should I get a closer look at the object surrounded by these objects?"
+                leolaniClient._add_utterance(AGENT, agent_message)
+                print(f"{AGENT}>{agent_message}")
+
+                while True:
+                    user_input = user_input_with_bye(
+                        "Type 'yes' if so, or 'no' to continue: ",
+                        leolaniClient,
+                        HUMAN,
+                        AGENT,
+                        scenario_saver,
+                    )
+                    if user_input == "no":
+                        searched_positions.append(position)
+                        break
+
+                    if user_input == "yes":
+                        confirm_msg = (
+                            f"Great! Let me have a closer look at the {matched_object}."
+                        )
+                        leolaniClient._add_utterance(AGENT, confirm_msg)
+                        print(f"{AGENT}>{confirm_msg}")
+
+                        event = teleport_in_front_of_object(
+                            controller,
+                            position,
+                            reachable_positions,
+                            visited_positions,
+                            leolaniClient,
+                        )
+                        add_image_from_event(
+                            leolaniClient,
+                            event,
+                            f"{matched_object}_close_analysis",
+                            matched_object,
+                        )
+
+                        base64_string = numpy_to_base64(event.frame)
+                        description = analyze_image(
+                            base64_string,
+                            api_key=api_key,
+                            prompt=f"""Describe the {matched_object}, be concise,
+                            focus on the characteristics that make it easily
+                            identifiable and distinguishable from similar objects
+                            (shape, color).""",
+                        )
+                        add_image_from_event(
+                            leolaniClient,
+                            event,
+                            f"{matched_object}_close_analyzed",
+                            matched_object,
+                        )
+
+                        utterance = description[0]["choices"][0]["message"]["content"]
+                        agent_message = (
+                            f"{utterance} Was this the item you were looking for?"
+                        )
+                        leolaniClient._add_utterance(AGENT, agent_message)
+                        print(f"{AGENT}>{agent_message}")
+
+                        while True:
+                            user_input = user_input_with_bye(
+                                "Type 'yes' if so, or 'no' to continue: ",
+                                leolaniClient,
+                                HUMAN,
+                                AGENT,
+                                scenario_saver,
+                            )
+                            if user_input == "yes":
+                                found_msg = f"Great! I've found the {matched_object}."
+                                leolaniClient._add_utterance(AGENT, found_msg)
+                                print(f"{AGENT}>{found_msg}")
+                                leolaniClient._save_scenario()
+                                return True
+                            elif user_input == "no":
+                                searched_positions.append(position)
+                                break
+                        break
+
+                    else:
+                        error_message = "Please respond with 'yes' or 'no'."
+                        leolaniClient._add_utterance(AGENT, error_message)
+                        print(f"{AGENT}>{error_message}")
+
+            # After checking all objects
+            if len(visited_positions) == len(reachable_positions):
+                msg = f"I have searched all locations but couldn't find any {matched_object}."
+                leolaniClient._add_utterance(AGENT, msg)
+                print(f"{AGENT}>{msg}")
+                leolaniClient._add_utterance(
+                    AGENT,
+                    "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                )
+                user_decision = user_input_with_bye(
+                    "", leolaniClient, HUMAN, AGENT, scenario_saver
+                )
+                if user_decision == "retry":
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+                elif user_decision == "change":
+                    leolaniClient._add_utterance(
+                        AGENT, "Please describe another object:"
+                    )
+                    new_description = safe_input("")
+                    leolaniClient._add_utterance(HUMAN, new_description)
+                    matched_object = interactive_object_match(
+                        api_key=api_key,
+                        human_object_description=new_description,
+                        unique_object_list=unique_object_list,
+                        HUMAN=HUMAN,
+                        AGENT=AGENT,
+                        leolaniClient=leolaniClient,
+                    )
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+                else:
+                    # Default action: retry
+                    visited_positions.clear()
+                    teleport_count = 0
+                    continue
+            else:
+                msg = "Teleporting to a new location to continue the search."
+                leolaniClient._add_utterance(AGENT, msg)
+                print(f"{AGENT}>{msg}")
+                farthest_position = get_farthest_position(
+                    reachable_positions, visited_positions
+                )
+                if farthest_position is None:
+                    msg = f"I have searched all locations but couldn't find any {matched_object}."
+                    leolaniClient._add_utterance(AGENT, msg)
+                    print(f"{AGENT}>{msg}")
+                    leolaniClient._add_utterance(
+                        AGENT,
+                        "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                    )
+                    user_decision = user_input_with_bye(
+                        "", leolaniClient, HUMAN, AGENT, scenario_saver
+                    )
+                    if user_decision == "retry":
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+                    elif user_decision == "change":
+                        leolaniClient._add_utterance(
+                            AGENT, "Please describe another object:"
+                        )
+                        new_description = safe_input("")
+                        leolaniClient._add_utterance(HUMAN, new_description)
+                        matched_object = interactive_object_match(
+                            api_key=api_key,
+                            human_object_description=new_description,
+                            unique_object_list=unique_object_list,
+                            HUMAN=HUMAN,
+                            AGENT=AGENT,
+                            leolaniClient=leolaniClient,
+                        )
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+                    else:
+                        # Default action: retry
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+
+                teleport_to_pos(
+                    farthest_position, visited_positions, controller, leolaniClient
+                )
+                teleport_count += 1
+                if teleport_count >= max_teleports:
+                    msg = f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
+                    leolaniClient._add_utterance(AGENT, msg)
+                    print(f"{AGENT}>{msg}")
+                    leolaniClient._add_utterance(
+                        AGENT,
+                        "Type 'retry' to search again, 'change' to pick another object, or 'bye' to stop:",
+                    )
+                    user_decision = user_input_with_bye(
+                        "", leolaniClient, HUMAN, AGENT, scenario_saver
+                    )
+                    if user_decision == "retry":
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+                    elif user_decision == "change":
+                        leolaniClient._add_utterance(
+                            AGENT, "Please describe another object:"
+                        )
+                        new_description = safe_input("")
+                        leolaniClient._add_utterance(HUMAN, new_description)
+                        matched_object = interactive_object_match(
+                            api_key=api_key,
+                            human_object_description=new_description,
+                            unique_object_list=unique_object_list,
+                            HUMAN=HUMAN,
+                            AGENT=AGENT,
+                            leolaniClient=leolaniClient,
+                        )
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+                    else:
+                        # Default action: retry
+                        visited_positions.clear()
+                        teleport_count = 0
+                        continue
+                continue
 
 
 def init_chat_client(emissor_path="./emissor", AGENT="Ai2Thor", HUMAN="Human"):

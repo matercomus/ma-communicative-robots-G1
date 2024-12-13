@@ -10,14 +10,8 @@ from utils import (
     analyze_prompt,
     interactive_object_match,
     random_teleport,
-    find_all_object_positions,
-    get_farthest_position,
-    teleport_to_pos,
-    user_input_with_bye,
-    euclidean_distance_2d,
-    # Note: find_object_and_confirm not included as user asked about main scenario changes
+    find_object_and_confirm,
 )
-
 from ai2thor.controller import Controller
 
 
@@ -30,50 +24,56 @@ def main(env="colab"):
     event = controller.step(action="GetReachablePositions")
     reachable_positions = event.metadata["actionReturn"]
 
-    AGENT = input("Type the agent name...")
-    HUMAN = input("Type the human name...")
+    AGENT = input("Type the agent name...").strip()
+    HUMAN = input("Type the human name...").strip()
     leolaniClient = init_chat_client(AGENT=AGENT, HUMAN=HUMAN)
 
     greeting = f"Hi {HUMAN}. What do you see in the room? Try to describe the spatial relationships between objects."
     add_utterance(AGENT, greeting, leolaniClient)
 
-    # If user types nothing or presses enter, safe_input or user_input_with_bye would handle it
-    room_description = input("Type the room description (or 'bye' to stop): ").strip()
-    if room_description.lower() == "bye":
-        leolaniClient._save_scenario()
-        return
-    if room_description == "":
-        print("Please provide some description or 'bye' to stop.")
-        room_description = input("Type the room description (or 'bye') again: ").strip()
+    # Ensure user provides a non-empty description
+    while True:
+        room_description = input(
+            "Type the room description (or 'bye' to stop): "
+        ).strip()
         if room_description.lower() == "bye":
             leolaniClient._save_scenario()
+            print(f"{AGENT}>Understood, stopping now. Goodbye!")
             return
+        if room_description == "":
+            print("Please provide a description or type 'bye' to stop.")
+            continue
+        break
     add_utterance(HUMAN, room_description, leolaniClient)
 
     # Ask clarifying questions using GPT
+    clarification_prompt = (
+        f"Imagine you are a robot who needs to be at the location the human was describing. "
+        f"The human describes: {room_description}\n"
+        f"Ask clarifying questions to better understand the room layout and object placements."
+    )
     claryfying_questions_response = analyze_prompt(
         api_key=api_key,
-        prompt=f"Imagine you are a robot who needs to be at the location the human was describing. The human describes: {room_description}\nAsk clarifying questions.",
+        prompt=clarification_prompt,
     )
     clarification_utterance = claryfying_questions_response[0]["choices"][0]["message"][
         "content"
     ]
     add_utterance(AGENT, clarification_utterance, leolaniClient)
 
-    clarified_description = input(
-        "Type the clarified room description (or 'bye' to stop): "
-    ).strip()
-    if clarified_description.lower() == "bye":
-        leolaniClient._save_scenario()
-        return
-    if clarified_description == "":
-        print("Please provide some clarification or type 'bye' to stop.")
+    # Ensure user provides a non-empty clarified description
+    while True:
         clarified_description = input(
-            "Type the clarified room description again: "
+            "Type the clarified room description (or 'bye' to stop): "
         ).strip()
         if clarified_description.lower() == "bye":
             leolaniClient._save_scenario()
+            print(f"{AGENT}>Understood, stopping now. Goodbye!")
             return
+        if clarified_description == "":
+            print("Please provide a clarification or type 'bye' to stop.")
+            continue
+        break
     add_utterance(HUMAN, clarified_description, leolaniClient)
 
     human_room_descriptions = [room_description, clarified_description]
@@ -81,18 +81,19 @@ def main(env="colab"):
     ask_object = "Describe the object I should look for."
     add_utterance(AGENT, ask_object, leolaniClient)
 
-    object_description = input(
-        "Type the object description (or 'bye' to stop): "
-    ).strip()
-    if object_description.lower() == "bye":
-        leolaniClient._save_scenario()
-        return
-    if object_description == "":
-        print("Please provide the object description or 'bye' to stop.")
-        object_description = input("Type the object description again: ").strip()
+    # Ensure user provides a non-empty object description
+    while True:
+        object_description = input(
+            "Type the object description (or 'bye' to stop): "
+        ).strip()
         if object_description.lower() == "bye":
             leolaniClient._save_scenario()
+            print(f"{AGENT}>Understood, stopping now. Goodbye!")
             return
+        if object_description == "":
+            print("Please provide the object description or type 'bye' to stop.")
+            continue
+        break
     add_utterance(HUMAN, object_description, leolaniClient)
 
     matched_object = interactive_object_match(
@@ -104,17 +105,31 @@ def main(env="colab"):
         leolaniClient=leolaniClient,
     )
 
+    # Start searching for the matched object
     visited_positions = random_teleport(controller, leolaniClient)
 
-    # Here you would call find_object_and_confirm or your updated logic
-    # For brevity, not shown. Just a placeholder:
-    add_utterance(
-        AGENT,
-        f"Now I would search for {matched_object}, but that logic isn't shown here.",
-        leolaniClient,
+    found = find_object_and_confirm(
+        controller=controller,
+        matched_object=matched_object,
+        reachable_positions=reachable_positions,
+        api_key=api_key,
+        AGENT=AGENT,
+        HUMAN=HUMAN,
+        leolaniClient=leolaniClient,
+        visited_positions=visited_positions,
+        human_room_descriptions=human_room_descriptions,
+        unique_object_list=unique_object_list,
     )
 
-    # Save scenario at the end
+    if found:
+        add_utterance(AGENT, "Successfully found the object.", leolaniClient)
+        print(f"{AGENT}>Successfully found the object.")
+    else:
+        add_utterance(
+            AGENT, "Object not found after searching all locations.", leolaniClient
+        )
+        print(f"{AGENT}>Object not found after searching all locations.")
+
     leolaniClient._save_scenario()
 
 
