@@ -73,7 +73,20 @@ def load_dataset(house: int = 6666):
     import prior
 
     dataset = prior.load_dataset("procthor-10k")
-    house = dataset["train"][house]
+    dataset["train"][5808]["objects"][9]["children"][2] = {
+        "assetId": "Laptop_13",
+        "id": "Laptop|surface|10|71",
+        "kinematic": False,
+        "openness": 0,
+        "position": {
+            "x": 5.308516502380371,
+            "y": 0.960530161857605,
+            "z": 3.317396640777588,
+        },
+        "rotation": {"x": -0.0, "y": 0.0, "z": 0.0},
+        "layer": "Procedural1",
+    }
+    house = dataset["train"][5808]
     return house
 
 
