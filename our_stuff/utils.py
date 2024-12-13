@@ -7,11 +7,29 @@ import copy
 import os
 import random
 import csv
-from openaiapi import analyze_image, analyze_prompt
 import matplotlib.pyplot as plt
 import math
-
 import re
+from enum import Enum, auto
+
+from openaiapi import analyze_image, analyze_prompt
+
+
+# Define the Action enum
+class Action(Enum):
+    MoveAhead = auto()
+    MoveBack = auto()
+    MoveLeft = auto()
+    MoveRight = auto()
+    RotateRight = auto()
+    RotateLeft = auto()
+    LookUp = auto()
+    LookDown = auto()
+    Crouch = auto()
+    Stand = auto()
+    Teleport = auto()
+    TeleportFull = auto()
+    Look = auto()
 
 
 def load_unique_object_list(csv_file_path):
@@ -27,22 +45,10 @@ def load_unique_object_list(csv_file_path):
 def numpy_to_base64(image_array, image_format="PNG"):
     """
     Convert a numpy array to a Base64-encoded string.
-
-    Parameters:
-        image_array (numpy.ndarray): The image array to convert.
-        image_format (str): The desired image format (e.g., "PNG", "JPEG").
-
-    Returns:
-        str: Base64-encoded string of the image.
     """
-    # Ensure the array is C-contiguous
     image_array = np.ascontiguousarray(image_array)
-
-    # Save to in-memory buffer
     buffer = io.BytesIO()
     Image.fromarray(image_array).save(buffer, format=image_format)
-
-    # Encode to Base64 and return as string
     return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
@@ -50,31 +56,16 @@ def setup(env="colab"):
     from dotenv import load_dotenv
 
     if env == "local":
-        # Get the current working directory
         current_dir = os.getcwd()
-        # Construct the relative path to the .env file
         env_path = os.path.join(current_dir, "../.env")
-        # Load the .env file
         load_dotenv(env_path)
-
-        # OpenAI API Key
         api_key = os.getenv("OPENAI_API_KEY")
-
     else:
-        # os.system("pip install --upgrade ai2thor --quiet")
-        # os.system("pip install ai2thor-colab prior --upgrade &> /dev/null")
-        # os.system("pip install python-dotenv")
-        # os.system("pip install cltl.combot --break-system-packages")
-        # os.system("apt-get install xvfb")
         import ai2thor_colab
 
         ai2thor_colab.start_xserver()
-        # Load the .env file
         load_dotenv()
-        # OpenAI API Key
         api_key = os.getenv("OPENAI_API_KEY")
-    # else:
-    #     raise ValueError("Invalid environment. Use 'colab' or 'local'.")
 
     return api_key
 
@@ -83,12 +74,11 @@ def load_dataset(house: int = 6666):
     import prior
 
     dataset = prior.load_dataset("procthor-10k")
-    house = dataset["train"][house]  # CHOOSE HOUSE
+    house = dataset["train"][house]
     return house
 
 
-def get_top_down_frame():
-    # Setup the top-down camera
+def get_top_down_frame(controller):
     event = controller.step(action="GetMapViewCameraProperties", raise_for_failure=True)
     pose = copy.deepcopy(event.metadata["actionReturn"])
 
@@ -101,7 +91,6 @@ def get_top_down_frame():
     pose["farClippingPlane"] = 50
     del pose["orthographicSize"]
 
-    # add the camera to the scene
     event = controller.step(
         action="AddThirdPartyCamera",
         **pose,
@@ -112,29 +101,42 @@ def get_top_down_frame():
     return Image.fromarray(top_down_frame)
 
 
-def teleport_in_front_of_object(
-    controller, object_position, reachable_positions, visited_positions, distance=1.0
+def record_action_and_image(
+    leolaniClient, action: Action, event, object_name="scene_view", object_type="scene"
 ):
-    """Teleports the agent to the closest reachable position in front of an object.
+    # Record the action
+    leolaniClient._add_action(action)
 
-    Args:
-      controller: The AI2Thor controller.
-      object_position: The position of the target object.
-      reachable_positions: A list of reachable positions in the scene.
-      distance: The desired distance in front of the object.
+    # Record the image
+    img_pil = Image.fromarray(event.frame)
+    dummy_bounds = {"x": 0, "y": 0, "z": 0}
+    leolaniClient._add_image(object_name, object_type, dummy_bounds, img_pil)
 
-    Returns:
-      The event after teleporting.
+
+def step_and_record(controller, leolaniClient, action_name, **kwargs):
     """
+    Execute controller.step(...) and record the action and resulting image.
+    action_name should be one of the Action enum values.
+    """
+    event = controller.step(action=action_name.name, **kwargs)
+    record_action_and_image(leolaniClient, action_name, event)
+    return event
 
-    # Calculate the target position in front of the object
+
+def teleport_in_front_of_object(
+    controller,
+    object_position,
+    reachable_positions,
+    visited_positions,
+    leolaniClient,
+    distance=1.0,
+):
     target_position = {
         "x": object_position["x"] - distance,
         "y": object_position["y"],
         "z": object_position["z"] - distance,
     }
 
-    # Find the closest reachable position
     closest_position = None
     min_distance = float("inf")
 
@@ -147,56 +149,47 @@ def teleport_in_front_of_object(
             min_distance = dist
             closest_position = position
 
-    # Teleport
-    event = controller.step(
-        action="Teleport", position=closest_position, rotation={"x": 0, "y": 0, "z": 0}
+    # First teleport to position
+    event = step_and_record(
+        controller,
+        leolaniClient,
+        Action.Teleport,
+        position=closest_position,
+        rotation={"x": 0, "y": 0, "z": 0},
     )
-
-    # Image.fromarray(event.frame)  # image for clarity
 
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
 
-    # Calculate rotation towards the object
     dx = object_position["x"] - closest_position["x"]
     dz = object_position["z"] - closest_position["z"]
     rotation = math.degrees(math.atan2(dx, dz))
     print(f"closest_position: {closest_position} Rotation: {rotation}")
 
-    # Teleport and rotate
-    event = controller.step(
-        action="Teleport", position=closest_position, rotation=rotation
+    # Adjust rotation
+    event = step_and_record(
+        controller,
+        leolaniClient,
+        Action.Teleport,
+        position=closest_position,
+        rotation=rotation,
     )
-    print(f"Teleporting to position: {closest_position}, after rotation {rotation}")
-    # Image.fromarray(event.frame)  # image for clarity
 
+    print(f"Teleporting to position: {closest_position}, after rotation {rotation}")
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
 
-    return event  # Return the event after adjusting view angle
+    return event
 
 
 def get_object_positions(controller, matched_object):
-    """
-    Finds the positions of all visible objects of a specific type.
-
-    Args:
-      controller: The AI2Thor controller.
-      matched_object: The type of object to find (e.g., "Painting", "Chair", "Table").
-
-    Returns:
-      A list of positions for the specified object type.
-    """
     visible_objects = [
         obj for obj in controller.last_event.metadata["objects"] if obj["visible"]
     ]
     objects_of_interest = [
         obj for obj in visible_objects if obj["objectType"] == matched_object
     ]
-    object_positions = []
-    for obj in objects_of_interest:
-        # print(obj["name"], obj["position"])
-        object_positions.append(obj["position"])
+    object_positions = [obj["position"] for obj in objects_of_interest]
     return object_positions
 
 
@@ -208,15 +201,7 @@ def interactive_object_match(
     AGENT: str,
     leolaniClient,
 ):
-    """
-    Interactively matches a human description of an object to one from a given list using an LLM.
-    If a single object is suggested, the user is asked for a yes/no confirmation.
-    If multiple objects are suggested, the user is asked to select one of the suggested options.
-    Case-insensitive matching is used when the user selects from multiple matches.
-    """
-
     def ask_llm(description: str, objects: list) -> str:
-        """Helper function to query the LLM for matching the description."""
         object_list_str = ", ".join(objects)
         prompt = (
             f"Imagine you are tasked with identifying an object from a given list based on its description. "
@@ -230,10 +215,9 @@ def interactive_object_match(
         )
         llm_response = analyze_prompt(api_key=api_key, prompt=prompt)
 
-        # Extract the response content if needed
         if isinstance(llm_response, tuple):
             llm_response = llm_response[0]
-        if isinstance(llm_response, list) and llm_response:  # Non-empty list
+        if isinstance(llm_response, list) and llm_response:
             llm_response = llm_response[0]
         if (
             isinstance(llm_response, dict)
@@ -247,19 +231,16 @@ def interactive_object_match(
     current_description = human_object_description
 
     while True:
-        # Query the LLM for a guess
         response = ask_llm(current_description, unique_object_list)
         leolaniClient._add_utterance(AGENT, response)
         print(f"{AGENT}>{response}")
 
-        # Extract the matched object(s) from the response
         matched_objects = re.findall(
             r"\b(" + "|".join(map(re.escape, unique_object_list)) + r")\b", response
         )
 
         if matched_objects:
             if len(matched_objects) == 1:
-                # Only one object suggested
                 confirmation_prompt = "Is this correct? (yes/no): "
                 leolaniClient._add_utterance(AGENT, confirmation_prompt)
                 print(f"{AGENT}>{confirmation_prompt}")
@@ -286,7 +267,6 @@ def interactive_object_match(
                     print(f"{AGENT}>{error_message}")
 
             else:
-                # Multiple objects suggested
                 objects_str = " or ".join(matched_objects)
                 selection_prompt = f"I've found multiple possible matches: {objects_str}. Which one best matches your object?"
                 leolaniClient._add_utterance(AGENT, selection_prompt)
@@ -295,12 +275,10 @@ def interactive_object_match(
                 leolaniClient._add_utterance(HUMAN, user_input)
                 print(f"{HUMAN}>{user_input}")
 
-                # Compare in a case-insensitive manner
                 user_input_lower = user_input.lower()
                 matched_objects_lower = [obj.lower() for obj in matched_objects]
 
                 if user_input_lower in matched_objects_lower:
-                    # Find the original matched object that corresponds to the user's selection
                     selected_object = matched_objects[
                         matched_objects_lower.index(user_input_lower)
                     ]
@@ -311,7 +289,6 @@ def interactive_object_match(
                     print(f"{AGENT}>{success_message}")
                     return selected_object
                 else:
-                    # User didn't pick one of the offered objects
                     refine_message = "Let's refine the search. Can you provide more details or clarify the description?"
                     leolaniClient._add_utterance(AGENT, refine_message)
                     print(f"{AGENT}>{refine_message}")
@@ -320,7 +297,6 @@ def interactive_object_match(
                     print(f"{HUMAN}>{clarifying_question}")
                     current_description = clarifying_question
         else:
-            # No matched objects found
             error_message = (
                 "I couldn't find a matching object. Can you provide more details?"
             )
@@ -333,21 +309,8 @@ def interactive_object_match(
 
 
 def find_all_object_positions(controller, object_type, num_rotations=3):
-    """
-    Finds the positions of all objects of a specific type by rotating the agent.
-
-    Args:
-      controller: The AI2Thor controller.
-      object_type: The type of object to find (e.g., "Painting", "Chair", "Table").
-      num_rotations: The number of times to rotate the agent to scan for objects.
-
-    Returns:
-      A list of positions for the specified object type.
-    """
-    all_object_positions = []  # To store all object positions
-
-    for _ in range(num_rotations):  # Rotate specified number of times
-        # Get visible objects and their positions
+    all_object_positions = []
+    for _ in range(num_rotations):
         visible_objects = [
             obj for obj in controller.last_event.metadata["objects"] if obj["visible"]
         ]
@@ -356,70 +319,36 @@ def find_all_object_positions(controller, object_type, num_rotations=3):
         ]
         current_object_positions = []
         for obj in objects_of_interest:
-            print(obj["name"], obj["position"])  # Optional: Print object details
+            print(obj["name"], obj["position"])
             current_object_positions.append(obj["position"])
-
-        # Add current object positions to the overall list
         all_object_positions.extend(current_object_positions)
-
-        # Rotate the agent
         controller.step("RotateRight")
-
     return all_object_positions
 
 
-def teleport_to_pos(pos, visited_positions, controller):
-    """
-    Teleports the agent to a given position and updates the visited_positions list.
-
-    Args:
-        pos (dict): The position to teleport to.
-    """
+def teleport_to_pos(pos, visited_positions, controller, leolaniClient):
     print(f"Teleporting to position: {pos}")
-    # rotation = random.choice(range(0, 360, 90))  # Optional: choose a rotation
-    event = controller.step(
-        action="Teleport", position=pos, rotation={"x": 0, "y": 0, "z": 0}
+    event = step_and_record(
+        controller,
+        leolaniClient,
+        Action.Teleport,
+        position=pos,
+        rotation={"x": 0, "y": 0, "z": 0},
     )
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
 
 
 def euclidean_distance_2d(pos1, pos2):
-    """
-    Calculate the Euclidean distance between two positions in 2D space (x and z axes).
-
-    Args:
-        pos1 (dict): The first position with 'x' and 'z' coordinates.
-        pos2 (dict): The second position with 'x' and 'z' coordinates.
-
-    Returns:
-        float: The Euclidean distance between the two positions.
-    """
     return math.sqrt((pos1["x"] - pos2["x"]) ** 2 + (pos1["z"] - pos2["z"]) ** 2)
 
 
 def get_farthest_position(reachable_positions, visited_positions):
-    """
-    Find the reachable position that is farthest from any of the visited positions.
-
-    Args:
-        reachable_positions (list): A list of reachable positions (each position is a dict with 'x', 'y', 'z').
-        visited_positions (list): A list of positions already visited.
-
-    Returns:
-        dict: The position in reachable_positions that is farthest from visited_positions.
-    """
     max_min_distance = -1
     farthest_position = None
     for position in reachable_positions:
-        # Compute distances to all visited positions
-        distances = [
-            euclidean_distance_2d(position, visited_pos)
-            for visited_pos in visited_positions
-        ]
-        # Find the minimum distance to the visited positions
+        distances = [euclidean_distance_2d(position, vp) for vp in visited_positions]
         min_distance = min(distances)
-        # Update if this is the farthest minimum distance found so far
         if min_distance > max_min_distance:
             max_min_distance = min_distance
             farthest_position = position
@@ -427,13 +356,11 @@ def get_farthest_position(reachable_positions, visited_positions):
 
 
 def plot_trajectory(reachable_positions, visited_positions, farthest_position):
-    # Extract x and z coordinates
     visited_x = [pos["x"] for pos in visited_positions]
     visited_z = [pos["z"] for pos in visited_positions]
     reachable_x = [pos["x"] for pos in reachable_positions]
     reachable_z = [pos["z"] for pos in reachable_positions]
 
-    # Plot the positions
     plt.figure(figsize=(10, 8))
     plt.scatter(reachable_x, reachable_z, c="blue", label="Reachable Positions")
     plt.scatter(visited_x, visited_z, c="red", label="Visited Positions")
@@ -464,41 +391,16 @@ def find_object_and_confirm(
     visited_positions,
     human_room_descriptions,
     max_rotations=3,
-    max_teleports=25,  # Add a parameter for the maximum number of teleports
+    max_teleports=25,
 ):
-    """
-    Searches for the matched_object in the environment and asks the user for confirmation.
-    If the object is not found, it teleports to the farthest away position and continues the search.
-
-    Args:
-        controller: The AI2Thor controller instance.
-        matched_object (str): The type of object to search for (e.g., "Painting").
-        reachable_positions (list): List of reachable positions in the environment.
-        api_key (str): API key for the OpenAI API.
-        AGENT (str): Name of the agent (e.g., "Ai2Thor").
-        HUMAN (str): Name of the human user.
-        leolaniClient: Instance of LeolaniChatClient for communication.
-        visited_positions (list): List of positions the agent has visited.
-        max_rotations (int): Number of rotations to perform when searching for objects.
-        max_teleports (int): Maximum number of teleports before stopping the search.
-
-    Returns:
-        bool: True if the object was found and confirmed by the user, False otherwise.
-    """
-
-    # Keep track of positions where the object has been searched for
     searched_positions = []
-    teleport_count = 0  # Initialize the teleport counter
+    teleport_count = 0
 
     while True:
-        # Find all positions of the matched object in the current view
         object_positions = find_all_object_positions(
             controller, matched_object, num_rotations=max_rotations
         )
-
-        # If no objects are found in the current location
         if not object_positions:
-            # Check if all reachable positions have been visited
             if len(visited_positions) == len(reachable_positions):
                 print(
                     f"{AGENT}>I have searched all locations but couldn't find any {matched_object}."
@@ -508,13 +410,10 @@ def find_object_and_confirm(
                     f"I have searched all locations but couldn't find any {matched_object}.",
                 )
                 return False
-
-            # Teleport to the farthest unvisited position
             farthest_position = get_farthest_position(
                 reachable_positions, visited_positions
             )
             if farthest_position is None:
-                # All positions have been visited
                 print(
                     f"{AGENT}>I have searched all locations but couldn't find any {matched_object}."
                 )
@@ -524,15 +423,11 @@ def find_object_and_confirm(
                 )
                 return False
             else:
-                # **Plot the trajectory before teleporting**
-                # plot_trajectory(
-                #     reachable_positions, visited_positions, farthest_position
-                # )
                 print("Teleporting to a new location to continue the search.")
-                teleport_to_pos(farthest_position, visited_positions, controller)
-                teleport_count += 1  # Increment the teleport counter
-
-                # Check if the maximum number of teleports has been reached
+                teleport_to_pos(
+                    farthest_position, visited_positions, controller, leolaniClient
+                )
+                teleport_count += 1
                 if teleport_count >= max_teleports:
                     print(
                         f"{AGENT}>I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
@@ -542,31 +437,24 @@ def find_object_and_confirm(
                         f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}.",
                     )
                     return False
-
-                continue  # Continue the while loop
+                continue
         else:
-            # Iterate over the found object positions
             for position in object_positions:
                 if position in searched_positions:
-                    continue  # Skip if we've already checked this object
+                    continue
 
-                # FAR
-                # Teleport in front of the object
                 event_far = teleport_in_front_of_object(
                     controller,
                     position,
                     reachable_positions,
                     visited_positions,
+                    leolaniClient,
                     distance=2.0,
                 )
-
                 base64_string_far = numpy_to_base64(event_far.frame)
-                # Image.fromarray(event_far.frame)  # image for clarity
-
                 human_room_description, human_room_description_clarified = (
                     human_room_descriptions
                 )
-                # Analyze the image using the OpenAI API
                 description_far = analyze_image(
                     base64_string_far,
                     api_key=api_key,
@@ -580,7 +468,6 @@ def find_object_and_confirm(
 
                             - What it is and VERY briefly what it looks like.
                             - Its position relative to {matched_object}
-                            (e.g. 'in front', 'behind', 'to the left' etc,).
 
                             Human’s initial description:
                             {human_room_description}
@@ -590,13 +477,10 @@ def find_object_and_confirm(
                             """,
                 )
                 utterance = description_far[0]["choices"][0]["message"]["content"]
-
-                # Communicate with the user
                 agent_message = f"{utterance} Should I get a closer look at the object surrounded by these objects?"
                 print(f"{AGENT}>{agent_message}")
                 leolaniClient._add_utterance(AGENT, agent_message)
 
-                # Get user input
                 while True:
                     user_input = (
                         input("Type 'yes' if so, or 'no' to continue: ").strip().lower()
@@ -616,18 +500,18 @@ def find_object_and_confirm(
                             AGENT,
                             f"Great! Let me have a closer look at the {matched_object}.",
                         )
-                        # NORMAL
-                        # Teleport in front of the object
-                        event = teleport_in_front_of_object(
-                            controller, position, reachable_positions, visited_positions
-                        )
 
+                        event = teleport_in_front_of_object(
+                            controller,
+                            position,
+                            reachable_positions,
+                            visited_positions,
+                            leolaniClient,
+                        )
                         base64_string = numpy_to_base64(event.frame)
-                        # Image.fromarray(event.frame)  # image for clarity
 
                         input("GPT close Press Enter to continue...")
 
-                        # Analyze the image using the OpenAI API
                         description = analyze_image(
                             base64_string,
                             api_key=api_key,
@@ -637,15 +521,12 @@ def find_object_and_confirm(
                             (shape, color).""",
                         )
                         utterance = description[0]["choices"][0]["message"]["content"]
-
-                        # Communicate with the user
                         agent_message = (
                             f"{utterance} Was this the item you were looking for?"
                         )
                         print(f"{AGENT}>{agent_message}")
                         leolaniClient._add_utterance(AGENT, agent_message)
 
-                        # Get user input
                         while True:
                             user_input = (
                                 input("Type 'yes' if so, or 'no' to continue: ")
@@ -663,26 +544,20 @@ def find_object_and_confirm(
                                     AGENT, f"Great! I've found the {matched_object}."
                                 )
                                 return True
-
                             elif user_input == "no":
                                 searched_positions.append(position)
                                 break
-
                             else:
-                                # Handle unexpected input
                                 error_message = "Please respond with 'yes' or 'no'."
                                 print(f"{AGENT}>{error_message}")
                                 leolaniClient._add_utterance(AGENT, error_message)
-
                         break
 
                     else:
-                        # Handle unexpected input
                         error_message = "Please respond with 'yes' or 'no'."
                         print(f"{AGENT}>{error_message}")
                         leolaniClient._add_utterance(AGENT, error_message)
 
-            # After checking all objects in current location, move to a new location
             if len(visited_positions) == len(reachable_positions):
                 print(
                     f"{AGENT}>I have searched all locations but couldn't find any {matched_object}."
@@ -693,17 +568,11 @@ def find_object_and_confirm(
                 )
                 return False
             else:
-                # **Plot the trajectory before teleporting**
-
                 print("Teleporting to a new location to continue the search.")
                 farthest_position = get_farthest_position(
                     reachable_positions, visited_positions
                 )
-                # plot_trajectory(
-                #     reachable_positions, visited_positions, farthest_position
-                # )
                 if farthest_position is None:
-                    # All positions have been visited
                     print(
                         f"{AGENT}>I have searched all locations but couldn't find any {matched_object}."
                     )
@@ -712,10 +581,10 @@ def find_object_and_confirm(
                         f"I have searched all locations but couldn't find any {matched_object}.",
                     )
                     return False
-                teleport_to_pos(farthest_position, visited_positions, controller)
-                teleport_count += 1  # Increment the teleport counter
-
-                # Check if the maximum number of teleports has been reached
+                teleport_to_pos(
+                    farthest_position, visited_positions, controller, leolaniClient
+                )
+                teleport_count += 1
                 if teleport_count >= max_teleports:
                     print(
                         f"{AGENT}>I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
@@ -725,12 +594,10 @@ def find_object_and_confirm(
                         f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}.",
                     )
                     return False
-
-                continue  # Continue the while loop
+                continue
 
 
 def init_chat_client(emissor_path="./emissor", AGENT="Ai2Thor", HUMAN="Human"):
-    # adding to the system path
     sys.path.insert(0, os.path.abspath("../emissor_chat"))
     from leolani_client import LeolaniChatClient
 
@@ -745,19 +612,20 @@ def add_utterance(WHO, utterance, leolaniClient):
     leolaniClient._add_utterance(WHO, utterance)
 
 
-def random_teleport(controller):
-    event = controller.step(action="GetReachablePositions")
+def random_teleport(controller, leolaniClient):
+    event = step_and_record(controller, leolaniClient, Action.GetReachablePositions)
     reachable_positions = event.metadata["actionReturn"]
-    # Teleport somewhere random (Only happens once at the start)
     visited_positions = []
     position = random.choice(reachable_positions)
-    # rotation = random.choice(range(360))
     print("Teleporting the agent to", position)
-    event = controller.step(
-        action="Teleport", position=position, rotation={"x": 0, "y": 0, "z": 0}
+
+    event = step_and_record(
+        controller,
+        leolaniClient,
+        Action.Teleport,
+        position=position,
+        rotation={"x": 0, "y": 0, "z": 0},
     )
     agent_position = controller.last_event.metadata["agent"]["position"]
     visited_positions.append(agent_position)
-    # Image.fromarray(event.frame)  # image for clearity
-
     return visited_positions
