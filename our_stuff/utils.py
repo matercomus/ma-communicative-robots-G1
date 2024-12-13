@@ -692,6 +692,30 @@ def find_object_and_confirm(
                                 leolaniClient._add_utterance(AGENT, found_msg)
                                 print(f"{AGENT}>{found_msg}")
                                 leolaniClient._save_scenario()
+
+                                # Return the found object id
+                                current_event = controller.last_event
+                                visible_objects = [
+                                    obj
+                                    for obj in current_event.metadata["objects"]
+                                    if obj["visible"]
+                                ]
+
+                                objects_of_interest = [
+                                    obj
+                                    for obj in visible_objects
+                                    if obj["objectType"].lower()
+                                    == matched_object.lower()
+                                ]
+
+                                if objects_of_interest:
+                                    for key, value in objects_of_interest[0].items():
+                                        print(f"{key}: {value}")
+                                    else:
+                                        print(
+                                            f"No metadata of the desired object {matched_object} found."
+                                        )
+
                                 return True
                             elif user_input == "no":
                                 searched_positions.append(position)
