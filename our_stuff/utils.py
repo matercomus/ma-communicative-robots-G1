@@ -173,12 +173,18 @@ def safe_input(prompt):
         return inp
 
 
-def user_input_with_bye(prompt, leolaniClient, HUMAN, AGENT, scenario_saver):
-    """Get user input and if 'bye', stop and save scenario."""
+def user_input_with_bye(
+    prompt, leolaniClient, HUMAN, AGENT, scenario_saver, valid_options=None
+):
     while True:
         inp = input(prompt).strip().lower()
         if inp == "":
             print("Please type something or 'bye'.")
+            continue
+        if valid_options and inp not in valid_options and inp != "bye":
+            print(
+                f"Invalid option. Please choose from: {', '.join(valid_options)} or 'bye'."
+            )
             continue
         leolaniClient._add_utterance(HUMAN, inp)
         print(f"{HUMAN}>{inp}")
