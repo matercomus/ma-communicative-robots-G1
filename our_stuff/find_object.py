@@ -1,3 +1,4 @@
+# find_object.py
 import os
 from PIL import Image
 from utils import (
@@ -29,24 +30,32 @@ def main(env="colab"):
 
     add_utterance(
         AGENT,
-        f"""Hi {HUMAN}. What do you see in the room? Try to
-                  describe the spatial relationships between objects.""",
+        f"Hi {HUMAN}. What do you see in the room? Try to describe the spatial relationships between objects.",
         leolaniClient,
     )
 
-    human_room_description = input("Type the room description...")
+    human_room_description = input(
+        "Type the room description (or 'bye' to stop): "
+    ).strip()
+    if human_room_description.lower() == "bye":
+        leolaniClient._save_scenario()
+        return
     add_utterance(HUMAN, human_room_description, leolaniClient)
 
     # Ask clarifying questions using GPT
     claryfying_questions_response = analyze_prompt(
         api_key=api_key,
-        model="gpt-4o-mini",
-        prompt=f"Imagine you are a robot who needs to be on an exact location as the point of view that the human has. After a while, the human can no longer see this image. The human will most likely describe a room from memory. The human will most likely describe a few objects and maybe some other attributes, like colours of objects. Your task is to ask clarifying questions about the room and objects so that you (the robot) has the highest chance of finding where the human was standing. Remember, ask the questions as if you were directly talking to the human. Try not to ask for too much detail and don't ask for too much; remember, the human has to describe the image from memory, so only ask what you deem most important. \nHuman description: {human_room_description}",
+        prompt=f"Imagine you are a robot who needs to be on an exact location as the point of view that the human has. After a while, the human can no longer see this image. The human will most likely describe a room from memory. The human will most likely describe a few objects and maybe some other attributes, like colours of objects. Your task is to ask clarifying questions about the room and objects so that you (the robot) has the highest chance of finding where the human was standing. Remember, ask the questions as if you were directly talking to the human. Try not to ask too much detail and don't ask for too much; remember, the human has to describe the image from memory, so only ask what you deem most important.\nHuman description: {human_room_description}",
     )
     utterance = claryfying_questions_response[0]["choices"][0]["message"]["content"]
     add_utterance(AGENT, utterance, leolaniClient)
 
-    human_room_description_clarified = input("Type the clarified room description...")
+    human_room_description_clarified = input(
+        "Type the clarified room description (or 'bye' to stop): "
+    ).strip()
+    if human_room_description_clarified.lower() == "bye":
+        leolaniClient._save_scenario()
+        return
     add_utterance(HUMAN, human_room_description_clarified, leolaniClient)
 
     human_room_descriptions = [human_room_description, human_room_description_clarified]
@@ -54,7 +63,12 @@ def main(env="colab"):
     utterance = "Describe the object I should look for."
     add_utterance(AGENT, utterance, leolaniClient)
 
-    human_obj_description = input("Type the object description...")
+    human_obj_description = input(
+        "Type the object description (or 'bye' to stop): "
+    ).strip()
+    if human_obj_description.lower() == "bye":
+        leolaniClient._save_scenario()
+        return
     add_utterance(HUMAN, human_obj_description, leolaniClient)
 
     matched_object = interactive_object_match(
@@ -66,7 +80,6 @@ def main(env="colab"):
         leolaniClient=leolaniClient,
     )
 
-    # Pass both controller and leolaniClient now
     visited_positions = random_teleport(controller, leolaniClient)
 
     found = find_object_and_confirm(

@@ -1,3 +1,4 @@
+# utils.py
 import sys
 import numpy as np
 from PIL import Image
@@ -30,6 +31,7 @@ class Action(Enum):
     Teleport = auto()
     TeleportFull = auto()
     Look = auto()
+    GetReachablePositions = auto()
 
 
 def load_unique_object_list(csv_file_path):
@@ -149,7 +151,7 @@ def teleport_in_front_of_object(
             min_distance = dist
             closest_position = position
 
-    # First teleport to position
+    # First teleport
     event = step_and_record(
         controller,
         leolaniClient,
@@ -191,6 +193,25 @@ def get_object_positions(controller, matched_object):
     ]
     object_positions = [obj["position"] for obj in objects_of_interest]
     return object_positions
+
+
+def user_input_with_bye(prompt, leolaniClient, HUMAN, AGENT, scenario_saver):
+    """Get user input and if 'bye', stop and save scenario."""
+    inp = input(prompt).strip().lower()
+    leolaniClient._add_utterance(HUMAN, inp)
+    if inp == "bye":
+        print(f"{AGENT}>Understood, stopping now. Goodbye!")
+        leolaniClient._add_utterance(AGENT, "Understood, stopping now. Goodbye!")
+        scenario_saver()
+        sys.exit(0)  # Exit the program immediately
+    return inp
+
+
+def add_image_from_event(leolaniClient, event, object_name, object_type):
+    """Add image from event frame."""
+    img_pil = Image.fromarray(event.frame)
+    dummy_bounds = {"x": 0, "y": 0, "z": 0}
+    leolaniClient._add_image(object_name, object_type, dummy_bounds, img_pil)
 
 
 def interactive_object_match(
@@ -241,11 +262,13 @@ def interactive_object_match(
 
         if matched_objects:
             if len(matched_objects) == 1:
-                confirmation_prompt = "Is this correct? (yes/no): "
+                confirmation_prompt = "Is this correct? (yes/no or bye to stop): "
                 leolaniClient._add_utterance(AGENT, confirmation_prompt)
                 print(f"{AGENT}>{confirmation_prompt}")
                 user_input = input().strip().lower()
                 leolaniClient._add_utterance(HUMAN, user_input)
+                if user_input == "bye":
+                    return matched_objects[0]  # Stop here gracefully
                 print(f"{HUMAN}>{user_input}")
 
                 if user_input == "yes":
@@ -259,10 +282,12 @@ def interactive_object_match(
                     print(f"{AGENT}>{refine_message}")
                     clarifying_question = input().strip()
                     leolaniClient._add_utterance(HUMAN, clarifying_question)
+                    if clarifying_question.lower() == "bye":
+                        return matched_objects[0]
                     print(f"{HUMAN}>{clarifying_question}")
                     current_description = clarifying_question
                 else:
-                    error_message = "Please respond with 'yes' or 'no'."
+                    error_message = "Please respond with 'yes', 'no', or 'bye'."
                     leolaniClient._add_utterance(AGENT, error_message)
                     print(f"{AGENT}>{error_message}")
 
@@ -273,6 +298,8 @@ def interactive_object_match(
                 print(f"{AGENT}>{selection_prompt}")
                 user_input = input().strip()
                 leolaniClient._add_utterance(HUMAN, user_input)
+                if user_input.lower() == "bye":
+                    return matched_objects[0]  # Stop gracefully
                 print(f"{HUMAN}>{user_input}")
 
                 user_input_lower = user_input.lower()
@@ -294,6 +321,8 @@ def interactive_object_match(
                     print(f"{AGENT}>{refine_message}")
                     clarifying_question = input().strip()
                     leolaniClient._add_utterance(HUMAN, clarifying_question)
+                    if clarifying_question.lower() == "bye":
+                        return matched_objects[0]
                     print(f"{HUMAN}>{clarifying_question}")
                     current_description = clarifying_question
         else:
@@ -304,6 +333,8 @@ def interactive_object_match(
             print(f"{AGENT}>{error_message}")
             clarifying_question = input().strip()
             leolaniClient._add_utterance(HUMAN, clarifying_question)
+            if clarifying_question.lower() == "bye":
+                return unique_object_list[0]  # Arbitrary return
             print(f"{HUMAN}>{clarifying_question}")
             current_description += " " + clarifying_question
 
@@ -393,6 +424,9 @@ def find_object_and_confirm(
     max_rotations=3,
     max_teleports=25,
 ):
+    def scenario_saver():
+        leolaniClient._save_scenario()
+
     searched_positions = []
     teleport_count = 0
 
@@ -402,41 +436,55 @@ def find_object_and_confirm(
         )
         if not object_positions:
             if len(visited_positions) == len(reachable_positions):
-                print(
-                    f"{AGENT}>I have searched all locations but couldn't find any {matched_object}."
-                )
-                leolaniClient._add_utterance(
+                msg = f"I have searched all locations but couldn't find any {matched_object}."
+                print(f"{AGENT}>{msg}")
+                leolaniClient._add_utterance(AGENT, msg)
+                # Ask user if they want to say bye
+                user_decision = user_input_with_bye(
+                    "Type anything or 'bye' to stop: ",
+                    leolaniClient,
+                    HUMAN,
                     AGENT,
-                    f"I have searched all locations but couldn't find any {matched_object}.",
+                    scenario_saver,
                 )
-                return False
+                # If not bye, just continue searching indefinitely
+                continue
             farthest_position = get_farthest_position(
                 reachable_positions, visited_positions
             )
             if farthest_position is None:
-                print(
-                    f"{AGENT}>I have searched all locations but couldn't find any {matched_object}."
-                )
-                leolaniClient._add_utterance(
+                msg = f"I have searched all locations but couldn't find any {matched_object}."
+                print(f"{AGENT}>{msg}")
+                leolaniClient._add_utterance(AGENT, msg)
+                user_decision = user_input_with_bye(
+                    "Type anything or 'bye' to stop: ",
+                    leolaniClient,
+                    HUMAN,
                     AGENT,
-                    f"I have searched all locations but couldn't find any {matched_object}.",
+                    scenario_saver,
                 )
-                return False
+                continue
             else:
                 print("Teleporting to a new location to continue the search.")
+                leolaniClient._add_utterance(
+                    AGENT, "Teleporting to a new location to continue the search."
+                )
                 teleport_to_pos(
                     farthest_position, visited_positions, controller, leolaniClient
                 )
                 teleport_count += 1
                 if teleport_count >= max_teleports:
-                    print(
-                        f"{AGENT}>I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
-                    )
-                    leolaniClient._add_utterance(
+                    msg = f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
+                    print(f"{AGENT}>{msg}")
+                    leolaniClient._add_utterance(AGENT, msg)
+                    user_decision = user_input_with_bye(
+                        "Type anything or 'bye' to stop: ",
+                        leolaniClient,
+                        HUMAN,
                         AGENT,
-                        f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}.",
+                        scenario_saver,
                     )
-                    return False
+                    continue
                 continue
         else:
             for position in object_positions:
@@ -451,6 +499,15 @@ def find_object_and_confirm(
                     leolaniClient,
                     distance=2.0,
                 )
+
+                # Add image before analysis
+                add_image_from_event(
+                    leolaniClient,
+                    event_far,
+                    f"{matched_object}_far_analysis",
+                    matched_object,
+                )
+
                 base64_string_far = numpy_to_base64(event_far.frame)
                 human_room_description, human_room_description_clarified = (
                     human_room_descriptions
@@ -463,11 +520,7 @@ def find_object_and_confirm(
                             descriptions and explain your reasoning. It might
                             be the same room but from a different point of
                             view.Then, describe distinguishable objects around
-                            {matched_object} as bullet points. For each object,
-                            include:
-
-                            - What it is and VERY briefly what it looks like.
-                            - Its position relative to {matched_object}
+                            {matched_object} as bullet points.
 
                             Human’s initial description:
                             {human_room_description}
@@ -476,16 +529,27 @@ def find_object_and_confirm(
                             {human_room_description_clarified}"
                             """,
                 )
+                # After analyze_image, also add image to log
+                add_image_from_event(
+                    leolaniClient,
+                    event_far,
+                    f"{matched_object}_far_analyzed",
+                    matched_object,
+                )
+
                 utterance = description_far[0]["choices"][0]["message"]["content"]
                 agent_message = f"{utterance} Should I get a closer look at the object surrounded by these objects?"
                 print(f"{AGENT}>{agent_message}")
                 leolaniClient._add_utterance(AGENT, agent_message)
 
                 while True:
-                    user_input = (
-                        input("Type 'yes' if so, or 'no' to continue: ").strip().lower()
+                    user_input = user_input_with_bye(
+                        "Type 'yes' if so, or 'no' to continue: ",
+                        leolaniClient,
+                        HUMAN,
+                        AGENT,
+                        scenario_saver,
                     )
-                    leolaniClient._add_utterance(HUMAN, user_input)
                     print(f"{HUMAN}>{user_input}")
 
                     if user_input == "no":
@@ -493,13 +557,11 @@ def find_object_and_confirm(
                         break
 
                     if user_input == "yes":
-                        print(
-                            f"{AGENT}>Great! Let me have a closer look at the {matched_object}."
+                        confirm_msg = (
+                            f"Great! Let me have a closer look at the {matched_object}."
                         )
-                        leolaniClient._add_utterance(
-                            AGENT,
-                            f"Great! Let me have a closer look at the {matched_object}.",
-                        )
+                        print(f"{AGENT}>{confirm_msg}")
+                        leolaniClient._add_utterance(AGENT, confirm_msg)
 
                         event = teleport_in_front_of_object(
                             controller,
@@ -508,9 +570,16 @@ def find_object_and_confirm(
                             visited_positions,
                             leolaniClient,
                         )
-                        base64_string = numpy_to_base64(event.frame)
 
-                        input("GPT close Press Enter to continue...")
+                        # Add image before analyzing again
+                        add_image_from_event(
+                            leolaniClient,
+                            event,
+                            f"{matched_object}_close_analysis",
+                            matched_object,
+                        )
+
+                        base64_string = numpy_to_base64(event.frame)
 
                         description = analyze_image(
                             base64_string,
@@ -520,6 +589,15 @@ def find_object_and_confirm(
                             identifiable and distinguishable from similar objects
                             (shape, color).""",
                         )
+
+                        # After analysis add image
+                        add_image_from_event(
+                            leolaniClient,
+                            event,
+                            f"{matched_object}_close_analyzed",
+                            matched_object,
+                        )
+
                         utterance = description[0]["choices"][0]["message"]["content"]
                         agent_message = (
                             f"{utterance} Was this the item you were looking for?"
@@ -528,72 +606,81 @@ def find_object_and_confirm(
                         leolaniClient._add_utterance(AGENT, agent_message)
 
                         while True:
-                            user_input = (
-                                input("Type 'yes' if so, or 'no' to continue: ")
-                                .strip()
-                                .lower()
+                            user_input = user_input_with_bye(
+                                "Type 'yes' if so, or 'no' to continue: ",
+                                leolaniClient,
+                                HUMAN,
+                                AGENT,
+                                scenario_saver,
                             )
-                            leolaniClient._add_utterance(HUMAN, user_input)
                             print(f"{HUMAN}>{user_input}")
 
                             if user_input == "yes":
-                                print(
-                                    f"{AGENT}>Great! I've found the {matched_object}."
-                                )
-                                leolaniClient._add_utterance(
-                                    AGENT, f"Great! I've found the {matched_object}."
-                                )
+                                found_msg = f"Great! I've found the {matched_object}."
+                                print(f"{AGENT}>{found_msg}")
+                                leolaniClient._add_utterance(AGENT, found_msg)
+                                leolaniClient._save_scenario()
                                 return True
                             elif user_input == "no":
                                 searched_positions.append(position)
                                 break
-                            else:
-                                error_message = "Please respond with 'yes' or 'no'."
-                                print(f"{AGENT}>{error_message}")
-                                leolaniClient._add_utterance(AGENT, error_message)
+                            # user_input_with_bye handles 'bye'
+
                         break
 
                     else:
                         error_message = "Please respond with 'yes' or 'no'."
                         print(f"{AGENT}>{error_message}")
                         leolaniClient._add_utterance(AGENT, error_message)
-
+            # If we finished checking all objects here without success
             if len(visited_positions) == len(reachable_positions):
-                print(
-                    f"{AGENT}>I have searched all locations but couldn't find any {matched_object}."
-                )
-                leolaniClient._add_utterance(
+                msg = f"I have searched all locations but couldn't find any {matched_object}."
+                print(f"{AGENT}>{msg}")
+                leolaniClient._add_utterance(AGENT, msg)
+                user_decision = user_input_with_bye(
+                    "Type anything or 'bye' to stop: ",
+                    leolaniClient,
+                    HUMAN,
                     AGENT,
-                    f"I have searched all locations but couldn't find any {matched_object}.",
+                    scenario_saver,
                 )
-                return False
+                continue
             else:
                 print("Teleporting to a new location to continue the search.")
+                leolaniClient._add_utterance(
+                    AGENT, "Teleporting to a new location to continue the search."
+                )
                 farthest_position = get_farthest_position(
                     reachable_positions, visited_positions
                 )
                 if farthest_position is None:
-                    print(
-                        f"{AGENT}>I have searched all locations but couldn't find any {matched_object}."
-                    )
-                    leolaniClient._add_utterance(
+                    msg = f"I have searched all locations but couldn't find any {matched_object}."
+                    print(f"{AGENT}>{msg}")
+                    leolaniClient._add_utterance(AGENT, msg)
+                    user_decision = user_input_with_bye(
+                        "Type anything or 'bye' to stop: ",
+                        leolaniClient,
+                        HUMAN,
                         AGENT,
-                        f"I have searched all locations but couldn't find any {matched_object}.",
+                        scenario_saver,
                     )
-                    return False
+                    continue
                 teleport_to_pos(
                     farthest_position, visited_positions, controller, leolaniClient
                 )
                 teleport_count += 1
                 if teleport_count >= max_teleports:
-                    print(
-                        f"{AGENT}>I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
-                    )
-                    leolaniClient._add_utterance(
+                    msg = f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}."
+                    print(f"{AGENT}>{msg}")
+                    leolaniClient._add_utterance(AGENT, msg)
+                    user_decision = user_input_with_bye(
+                        "Type anything or 'bye' to stop: ",
+                        leolaniClient,
+                        HUMAN,
                         AGENT,
-                        f"I have reached the maximum number of teleports ({max_teleports}) but couldn't find any {matched_object}.",
+                        scenario_saver,
                     )
-                    return False
+                    continue
                 continue
 
 
