@@ -115,51 +115,81 @@ def teleport_in_front_of_object(
     visited_positions,
     leolaniClient,
     distance=1.0,
+    max_attempts=5
 ):
+    """
+    Teleports in front of the object and checks if it is visible.
+    If the object is not visible, it tries the next best reachable position.
+    """
+
+    # Compute target position in front of the object (adjust as needed)
     target_position = {
         "x": object_position["x"] - distance,
         "y": object_position["y"],
         "z": object_position["z"] - distance,
     }
 
-    closest_position = None
-    min_distance = float("inf")
-
-    for position in reachable_positions:
-        dist = math.sqrt(
-            (position["x"] - target_position["x"]) ** 2
-            + (position["z"] - target_position["z"]) ** 2
+    # Sort reachable positions by their distance to target_position
+    candidate_positions = sorted(
+        reachable_positions,
+        key=lambda pos: math.sqrt(
+            (pos["x"] - target_position["x"]) ** 2 + (pos["z"] - target_position["z"]) ** 2
         )
-        if dist < min_distance:
-            min_distance = dist
-            closest_position = position
-
-    event = step_and_record(
-        controller,
-        leolaniClient,
-        Action.Teleport,
-        position=closest_position,
-        rotation={"x": 0, "y": 0, "z": 0},
-    )
-    agent_position = controller.last_event.metadata["agent"]["position"]
-    visited_positions.append(agent_position)
-
-    dx = object_position["x"] - closest_position["x"]
-    dz = object_position["z"] - closest_position["z"]
-    rotation = math.degrees(math.atan2(dx, dz))
-
-    event = step_and_record(
-        controller,
-        leolaniClient,
-        Action.Teleport,
-        position=closest_position,
-        rotation=rotation,
     )
 
-    agent_position = controller.last_event.metadata["agent"]["position"]
-    visited_positions.append(agent_position)
+    # Try up to max_attempts candidates
+    attempts = 0
+    for candidate_pos in candidate_positions:
+        if attempts >= max_attempts:
+            break
 
-    return event
+        # First teleport to candidate position (no rotation)
+        event = step_and_record(
+            controller,
+            leolaniClient,
+            Action.Teleport,
+            position=candidate_pos,
+            rotation={"x": 0, "y": 0, "z": 0},
+        )
+        agent_position = controller.last_event.metadata["agent"]["position"]
+        visited_positions.append(agent_position)
+
+        # Compute rotation so that the agent faces the object
+        dx = object_position["x"] - candidate_pos["x"]
+        dz = object_position["z"] - candidate_pos["z"]
+        rotation = math.degrees(math.atan2(dx, dz))
+
+        # Rotate to face the object
+        event = step_and_record(
+            controller,
+            leolaniClient,
+            Action.Teleport,
+            position=candidate_pos,
+            rotation=rotation,
+        )
+
+        agent_position = controller.last_event.metadata["agent"]["position"]
+        visited_positions.append(agent_position)
+
+        # Check visibility of the object
+        visible_objects = [obj for obj in controller.last_event.metadata["objects"] if obj["visible"]]
+        object_visible = any(
+            obj for obj in visible_objects if obj["objectType"].lower() == object_position["objectType"].lower()
+        ) if "objectType" in object_position else False
+
+        if not object_visible:
+            # Object not visible, try the next candidate
+            attempts += 1
+            continue
+        else:
+            # Object is visible, we have succeeded
+            return event
+
+    # If we reach here, we didn't find a visible position within max_attempts
+    warning_msg = "Warning: Could not find a position where the object is visible after multiple attempts."
+    leolaniClient._add_utterance("Ai2Thor", warning_msg)
+    print("Ai2Thor>", warning_msg)
+    return event  # Return the last event even if not successful
 
 
 def get_object_positions(controller, matched_object):
